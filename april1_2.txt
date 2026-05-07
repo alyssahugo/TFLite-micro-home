@@ -1,0 +1,112 @@
+
+gen/riscv32_generic_x86_64_default_gcc/bin/person_detection:     file format elf32-littleriscv
+
+
+Disassembly of section .text:
+
+00000000 <_start>:
+   0:	80048117          	auipc	sp,0x80048
+   4:	03010113          	addi	sp,sp,48 # 80048030 <__stack_top+0x0>
+   8:	80000517          	auipc	a0,0x80000
+   c:	01850513          	addi	a0,a0,24 # 80000020 <__stack_top+0xfffb7ff0>
+  10:	80000597          	auipc	a1,0x80000
+  14:	02058593          	addi	a1,a1,32 # 80000030 <__stack_top+0xfffb8000>
+  18:	00b57863          	bgeu	a0,a1,28 <_start+0x28>
+  1c:	00052023          	sw	zero,0(a0)
+  20:	00450513          	addi	a0,a0,4
+  24:	ff5ff06f          	j	18 <_start+0x18>
+  28:	00000097          	auipc	ra,0x0
+  2c:	00c080e7          	jalr	12(ra) # 34 <main>
+  30:	0000006f          	j	30 <_start+0x30>
+
+00000034 <main>:
+  34:	ff010113          	addi	sp,sp,-16
+  38:	00112623          	sw	ra,12(sp)
+  3c:	00000097          	auipc	ra,0x0
+  40:	074080e7          	jalr	116(ra) # b0 <setup>
+  44:	00000097          	auipc	ra,0x0
+  48:	054080e7          	jalr	84(ra) # 98 <loop>
+  4c:	0000006f          	j	4c <main+0x18>
+
+00000050 <_ZL11RawPutHex32m>:
+  50:	01c00713          	li	a4,28
+  54:	40600637          	lui	a2,0x40600
+  58:	ffc00593          	li	a1,-4
+  5c:	00e557b3          	srl	a5,a0,a4
+  60:	80000697          	auipc	a3,0x80000
+  64:	fa068693          	addi	a3,a3,-96 # 80000000 <__stack_top+0xfffb7fd0>
+  68:	00f7f793          	andi	a5,a5,15
+  6c:	00d787b3          	add	a5,a5,a3
+  70:	0007c683          	lbu	a3,0(a5)
+  74:	ffc70713          	addi	a4,a4,-4
+  78:	00d62223          	sw	a3,4(a2) # 40600004 <setup+0x405fff54>
+  7c:	feb710e3          	bne	a4,a1,5c <_ZL11RawPutHex32m+0xc>
+  80:	02000713          	li	a4,32
+  84:	00e62223          	sw	a4,4(a2)
+  88:	00008067          	ret
+
+0000008c <F1>:
+  8c:	00008067          	ret
+
+00000090 <F3>:
+  90:	00008067          	ret
+
+00000094 <F2>:
+  94:	00008067          	ret
+
+00000098 <loop>:
+  98:	406007b7          	lui	a5,0x40600
+  9c:	03300713          	li	a4,51
+  a0:	00e7a223          	sw	a4,4(a5) # 40600004 <setup+0x405fff54>
+  a4:	06a00713          	li	a4,106
+  a8:	00e7a223          	sw	a4,4(a5)
+  ac:	00008067          	ret
+
+000000b0 <setup>:
+  b0:	fe010113          	addi	sp,sp,-32
+  b4:	00112e23          	sw	ra,28(sp)
+  b8:	05800793          	li	a5,88
+  bc:	00812c23          	sw	s0,24(sp)
+  c0:	00912a23          	sw	s1,20(sp)
+  c4:	01212823          	sw	s2,16(sp)
+  c8:	01312623          	sw	s3,12(sp)
+  cc:	01412423          	sw	s4,8(sp)
+  d0:	406009b7          	lui	s3,0x40600
+  d4:	00000917          	auipc	s2,0x0
+  d8:	00f9a223          	sw	a5,4(s3) # 40600004 <setup+0x405fff54>
+  dc:	fb890913          	addi	s2,s2,-72 # 8c <F1>
+  e0:	02000a13          	li	s4,32
+  e4:	00090513          	mv	a0,s2
+  e8:	0149a223          	sw	s4,4(s3)
+  ec:	00000497          	auipc	s1,0x0
+  f0:	00000097          	auipc	ra,0x0
+  f4:	f60080e7          	jalr	-160(ra) # 50 <_ZL11RawPutHex32m>
+  f8:	fa848493          	addi	s1,s1,-88 # 94 <F2>
+  fc:	00048513          	mv	a0,s1
+ 100:	00000417          	auipc	s0,0x0
+ 104:	00000097          	auipc	ra,0x0
+ 108:	f4c080e7          	jalr	-180(ra) # 50 <_ZL11RawPutHex32m>
+ 10c:	f9040413          	addi	s0,s0,-112 # 90 <F3>
+ 110:	00040513          	mv	a0,s0
+ 114:	00000097          	auipc	ra,0x0
+ 118:	f3c080e7          	jalr	-196(ra) # 50 <_ZL11RawPutHex32m>
+ 11c:	07c00793          	li	a5,124
+ 120:	00f9a223          	sw	a5,4(s3)
+ 124:	05900793          	li	a5,89
+ 128:	00f9a223          	sw	a5,4(s3)
+ 12c:	80000797          	auipc	a5,0x80000
+ 130:	ef478793          	addi	a5,a5,-268 # 80000020 <__stack_top+0xfffb7ff0>
+ 134:	0149a223          	sw	s4,4(s3)
+ 138:	0127a023          	sw	s2,0(a5)
+ 13c:	0097a223          	sw	s1,4(a5)
+ 140:	0087a423          	sw	s0,8(a5)
+ 144:	00090513          	mv	a0,s2
+ 148:	00000097          	auipc	ra,0x0
+ 14c:	f08080e7          	jalr	-248(ra) # 50 <_ZL11RawPutHex32m>
+ 150:	00048513          	mv	a0,s1
+ 154:	00000097          	auipc	ra,0x0
+ 158:	efc080e7          	jalr	-260(ra) # 50 <_ZL11RawPutHex32m>
+ 15c:	00040513          	mv	a0,s0
+ 160:	00000097          	auipc	ra,0x0
+ 164:	ef0080e7          	jalr	-272(ra) # 50 <_ZL11RawPutHex32m>
+ 168:	0000006f          	j	168 <setup+0xb8>

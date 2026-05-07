@@ -1,0 +1,370 @@
+
+gen/riscv32_generic_x86_64_default_gcc/bin/person_detection:     file format elf32-littleriscv
+
+
+Disassembly of section .text:
+
+00000000 <_start>:
+   0:	80008117          	auipc	sp,0x80008
+   4:	03010113          	addi	sp,sp,48 # 80008030 <__stack_top+0x0>
+   8:	80000517          	auipc	a0,0x80000
+   c:	02850513          	addi	a0,a0,40 # 80000030 <__stack_top+0xffff8000>
+  10:	80000597          	auipc	a1,0x80000
+  14:	02058593          	addi	a1,a1,32 # 80000030 <__stack_top+0xffff8000>
+  18:	00b57863          	bgeu	a0,a1,28 <_start+0x28>
+  1c:	00052023          	sw	zero,0(a0)
+  20:	00450513          	addi	a0,a0,4
+  24:	ff5ff06f          	j	18 <_start+0x18>
+  28:	00000097          	auipc	ra,0x0
+  2c:	00c080e7          	jalr	12(ra) # 34 <main>
+  30:	0000006f          	j	30 <_start+0x30>
+
+00000034 <main>:
+  34:	ff010113          	addi	sp,sp,-16
+  38:	00112623          	sw	ra,12(sp)
+  3c:	00000097          	auipc	ra,0x0
+  40:	02c080e7          	jalr	44(ra) # 68 <setup>
+  44:	00000097          	auipc	ra,0x0
+  48:	0b4080e7          	jalr	180(ra) # f8 <loop>
+  4c:	0000006f          	j	4c <main+0x18>
+
+00000050 <_ZL7RawPutcc>:
+  50:	40600737          	lui	a4,0x40600
+  54:	00872783          	lw	a5,8(a4) # 40600008 <DebugLog+0x405ffcf8>
+  58:	0087f793          	andi	a5,a5,8
+  5c:	fe079ce3          	bnez	a5,54 <_ZL7RawPutcc+0x4>
+  60:	00a72223          	sw	a0,4(a4)
+  64:	00008067          	ret
+
+00000068 <setup>:
+  68:	ff010113          	addi	sp,sp,-16
+  6c:	00812423          	sw	s0,8(sp)
+  70:	80000417          	auipc	s0,0x80000
+  74:	00112623          	sw	ra,12(sp)
+  78:	f9040413          	addi	s0,s0,-112 # 80000000 <__stack_top+0xffff7fd0>
+  7c:	00044503          	lbu	a0,0(s0)
+  80:	00050a63          	beqz	a0,94 <setup+0x2c>
+  84:	00140413          	addi	s0,s0,1
+  88:	00000097          	auipc	ra,0x0
+  8c:	fc8080e7          	jalr	-56(ra) # 50 <_ZL7RawPutcc>
+  90:	fedff06f          	j	7c <setup+0x14>
+  94:	00d00513          	li	a0,13
+  98:	00000097          	auipc	ra,0x0
+  9c:	fb8080e7          	jalr	-72(ra) # 50 <_ZL7RawPutcc>
+  a0:	00a00513          	li	a0,10
+  a4:	00000097          	auipc	ra,0x0
+  a8:	fac080e7          	jalr	-84(ra) # 50 <_ZL7RawPutcc>
+  ac:	80000517          	auipc	a0,0x80000
+  b0:	f5c50513          	addi	a0,a0,-164 # 80000008 <__stack_top+0xffff7fd8>
+  b4:	00000097          	auipc	ra,0x0
+  b8:	0b8080e7          	jalr	184(ra) # 16c <_Z11MicroPrintfPKcz>
+  bc:	03100513          	li	a0,49
+  c0:	00000097          	auipc	ra,0x0
+  c4:	f90080e7          	jalr	-112(ra) # 50 <_ZL7RawPutcc>
+  c8:	00000097          	auipc	ra,0x0
+  cc:	0e4080e7          	jalr	228(ra) # 1ac <_ZN6tflite16InitializeTargetEv>
+  d0:	03200513          	li	a0,50
+  d4:	00000097          	auipc	ra,0x0
+  d8:	f7c080e7          	jalr	-132(ra) # 50 <_ZL7RawPutcc>
+  dc:	00d00513          	li	a0,13
+  e0:	00000097          	auipc	ra,0x0
+  e4:	f70080e7          	jalr	-144(ra) # 50 <_ZL7RawPutcc>
+  e8:	00a00513          	li	a0,10
+  ec:	00000097          	auipc	ra,0x0
+  f0:	f64080e7          	jalr	-156(ra) # 50 <_ZL7RawPutcc>
+  f4:	0000006f          	j	f4 <setup+0x8c>
+
+000000f8 <loop>:
+  f8:	0000006f          	j	f8 <loop>
+
+000000fc <_ZN12_GLOBAL__N_19VDebugLogEPKcz.constprop.0>:
+  fc:	fc010113          	addi	sp,sp,-64
+ 100:	80000517          	auipc	a0,0x80000
+ 104:	02b12223          	sw	a1,36(sp)
+ 108:	f2050513          	addi	a0,a0,-224 # 80000020 <__stack_top+0xffff7ff0>
+ 10c:	02410593          	addi	a1,sp,36
+ 110:	00112e23          	sw	ra,28(sp)
+ 114:	02c12423          	sw	a2,40(sp)
+ 118:	02d12623          	sw	a3,44(sp)
+ 11c:	02e12823          	sw	a4,48(sp)
+ 120:	02f12a23          	sw	a5,52(sp)
+ 124:	03012c23          	sw	a6,56(sp)
+ 128:	03112e23          	sw	a7,60(sp)
+ 12c:	00b12623          	sw	a1,12(sp)
+ 130:	00000097          	auipc	ra,0x0
+ 134:	1e0080e7          	jalr	480(ra) # 310 <DebugLog>
+ 138:	01c12083          	lw	ra,28(sp)
+ 13c:	04010113          	addi	sp,sp,64
+ 140:	00008067          	ret
+
+00000144 <_Z12VMicroPrintfPKcPv>:
+ 144:	ff010113          	addi	sp,sp,-16
+ 148:	00112623          	sw	ra,12(sp)
+ 14c:	00000097          	auipc	ra,0x0
+ 150:	1c4080e7          	jalr	452(ra) # 310 <DebugLog>
+ 154:	00c12083          	lw	ra,12(sp)
+ 158:	80000517          	auipc	a0,0x80000
+ 15c:	ec850513          	addi	a0,a0,-312 # 80000020 <__stack_top+0xffff7ff0>
+ 160:	01010113          	addi	sp,sp,16
+ 164:	00000317          	auipc	t1,0x0
+ 168:	f9830067          	jr	-104(t1) # fc <_ZN12_GLOBAL__N_19VDebugLogEPKcz.constprop.0>
+
+0000016c <_Z11MicroPrintfPKcz>:
+ 16c:	fc010113          	addi	sp,sp,-64
+ 170:	02b12223          	sw	a1,36(sp)
+ 174:	02410593          	addi	a1,sp,36
+ 178:	00112e23          	sw	ra,28(sp)
+ 17c:	02c12423          	sw	a2,40(sp)
+ 180:	02d12623          	sw	a3,44(sp)
+ 184:	02e12823          	sw	a4,48(sp)
+ 188:	02f12a23          	sw	a5,52(sp)
+ 18c:	03012c23          	sw	a6,56(sp)
+ 190:	03112e23          	sw	a7,60(sp)
+ 194:	00b12623          	sw	a1,12(sp)
+ 198:	00000097          	auipc	ra,0x0
+ 19c:	fac080e7          	jalr	-84(ra) # 144 <_Z12VMicroPrintfPKcPv>
+ 1a0:	01c12083          	lw	ra,28(sp)
+ 1a4:	04010113          	addi	sp,sp,64
+ 1a8:	00008067          	ret
+
+000001ac <_ZN6tflite16InitializeTargetEv>:
+ 1ac:	00008067          	ret
+
+000001b0 <_ZN12_GLOBAL__N_111UartPutcRawEc>:
+ 1b0:	40600737          	lui	a4,0x40600
+ 1b4:	00872783          	lw	a5,8(a4) # 40600008 <DebugLog+0x405ffcf8>
+ 1b8:	0087f793          	andi	a5,a5,8
+ 1bc:	fe079ce3          	bnez	a5,1b4 <_ZN12_GLOBAL__N_111UartPutcRawEc+0x4>
+ 1c0:	00a72223          	sw	a0,4(a4)
+ 1c4:	00008067          	ret
+
+000001c8 <_ZN12_GLOBAL__N_19UartHex32Em>:
+ 1c8:	fe010113          	addi	sp,sp,-32
+ 1cc:	00812c23          	sw	s0,24(sp)
+ 1d0:	00912a23          	sw	s1,20(sp)
+ 1d4:	01212823          	sw	s2,16(sp)
+ 1d8:	01312623          	sw	s3,12(sp)
+ 1dc:	00112e23          	sw	ra,28(sp)
+ 1e0:	00050913          	mv	s2,a0
+ 1e4:	01c00413          	li	s0,28
+ 1e8:	00900993          	li	s3,9
+ 1ec:	ffc00493          	li	s1,-4
+ 1f0:	008957b3          	srl	a5,s2,s0
+ 1f4:	00f7f793          	andi	a5,a5,15
+ 1f8:	0ff7f713          	zext.b	a4,a5
+ 1fc:	03770513          	addi	a0,a4,55
+ 200:	00f9e463          	bltu	s3,a5,208 <_ZN12_GLOBAL__N_19UartHex32Em+0x40>
+ 204:	03070513          	addi	a0,a4,48
+ 208:	ffc40413          	addi	s0,s0,-4
+ 20c:	00000097          	auipc	ra,0x0
+ 210:	fa4080e7          	jalr	-92(ra) # 1b0 <_ZN12_GLOBAL__N_111UartPutcRawEc>
+ 214:	fc941ee3          	bne	s0,s1,1f0 <_ZN12_GLOBAL__N_19UartHex32Em+0x28>
+ 218:	01c12083          	lw	ra,28(sp)
+ 21c:	01812403          	lw	s0,24(sp)
+ 220:	01412483          	lw	s1,20(sp)
+ 224:	01012903          	lw	s2,16(sp)
+ 228:	00c12983          	lw	s3,12(sp)
+ 22c:	02010113          	addi	sp,sp,32
+ 230:	00008067          	ret
+
+00000234 <_ZN12_GLOBAL__N_118UartWriteStringRawEPKc.part.0>:
+ 234:	ff010113          	addi	sp,sp,-16
+ 238:	00812423          	sw	s0,8(sp)
+ 23c:	00912223          	sw	s1,4(sp)
+ 240:	00112623          	sw	ra,12(sp)
+ 244:	00050413          	mv	s0,a0
+ 248:	00a00493          	li	s1,10
+ 24c:	00044783          	lbu	a5,0(s0)
+ 250:	02078463          	beqz	a5,278 <_ZN12_GLOBAL__N_118UartWriteStringRawEPKc.part.0+0x44>
+ 254:	00979863          	bne	a5,s1,264 <_ZN12_GLOBAL__N_118UartWriteStringRawEPKc.part.0+0x30>
+ 258:	00d00513          	li	a0,13
+ 25c:	00000097          	auipc	ra,0x0
+ 260:	f54080e7          	jalr	-172(ra) # 1b0 <_ZN12_GLOBAL__N_111UartPutcRawEc>
+ 264:	00140413          	addi	s0,s0,1
+ 268:	fff44503          	lbu	a0,-1(s0)
+ 26c:	00000097          	auipc	ra,0x0
+ 270:	f44080e7          	jalr	-188(ra) # 1b0 <_ZN12_GLOBAL__N_111UartPutcRawEc>
+ 274:	fd9ff06f          	j	24c <_ZN12_GLOBAL__N_118UartWriteStringRawEPKc.part.0+0x18>
+ 278:	00c12083          	lw	ra,12(sp)
+ 27c:	00812403          	lw	s0,8(sp)
+ 280:	00412483          	lw	s1,4(sp)
+ 284:	01010113          	addi	sp,sp,16
+ 288:	00008067          	ret
+
+0000028c <_ZN12_GLOBAL__N_115UartDecUnsignedEm>:
+ 28c:	00051863          	bnez	a0,29c <_ZN12_GLOBAL__N_115UartDecUnsignedEm+0x10>
+ 290:	03000513          	li	a0,48
+ 294:	00000317          	auipc	t1,0x0
+ 298:	f1c30067          	jr	-228(t1) # 1b0 <_ZN12_GLOBAL__N_111UartPutcRawEc>
+ 29c:	fe010113          	addi	sp,sp,-32
+ 2a0:	00410793          	addi	a5,sp,4
+ 2a4:	00812c23          	sw	s0,24(sp)
+ 2a8:	00912a23          	sw	s1,20(sp)
+ 2ac:	00112e23          	sw	ra,28(sp)
+ 2b0:	00000413          	li	s0,0
+ 2b4:	00078493          	mv	s1,a5
+ 2b8:	00a00713          	li	a4,10
+ 2bc:	00900613          	li	a2,9
+ 2c0:	02e576b3          	remu	a3,a0,a4
+ 2c4:	00140413          	addi	s0,s0,1
+ 2c8:	03068693          	addi	a3,a3,48
+ 2cc:	00d78023          	sb	a3,0(a5)
+ 2d0:	02e556b3          	divu	a3,a0,a4
+ 2d4:	00a67863          	bgeu	a2,a0,2e4 <_ZN12_GLOBAL__N_115UartDecUnsignedEm+0x58>
+ 2d8:	00178793          	addi	a5,a5,1
+ 2dc:	00068513          	mv	a0,a3
+ 2e0:	fee410e3          	bne	s0,a4,2c0 <_ZN12_GLOBAL__N_115UartDecUnsignedEm+0x34>
+ 2e4:	fff40413          	addi	s0,s0,-1
+ 2e8:	008487b3          	add	a5,s1,s0
+ 2ec:	0007c503          	lbu	a0,0(a5)
+ 2f0:	00000097          	auipc	ra,0x0
+ 2f4:	ec0080e7          	jalr	-320(ra) # 1b0 <_ZN12_GLOBAL__N_111UartPutcRawEc>
+ 2f8:	fe0416e3          	bnez	s0,2e4 <_ZN12_GLOBAL__N_115UartDecUnsignedEm+0x58>
+ 2fc:	01c12083          	lw	ra,28(sp)
+ 300:	01812403          	lw	s0,24(sp)
+ 304:	01412483          	lw	s1,20(sp)
+ 308:	02010113          	addi	sp,sp,32
+ 30c:	00008067          	ret
+
+00000310 <DebugLog>:
+ 310:	22050863          	beqz	a0,540 <DebugLog+0x230>
+ 314:	fd010113          	addi	sp,sp,-48
+ 318:	02812423          	sw	s0,40(sp)
+ 31c:	02912223          	sw	s1,36(sp)
+ 320:	02112623          	sw	ra,44(sp)
+ 324:	03212023          	sw	s2,32(sp)
+ 328:	01312e23          	sw	s3,28(sp)
+ 32c:	01412c23          	sw	s4,24(sp)
+ 330:	01512a23          	sw	s5,20(sp)
+ 334:	01612823          	sw	s6,16(sp)
+ 338:	01712623          	sw	s7,12(sp)
+ 33c:	01812423          	sw	s8,8(sp)
+ 340:	00050493          	mv	s1,a0
+ 344:	00058413          	mv	s0,a1
+ 348:	00050793          	mv	a5,a0
+ 34c:	02500693          	li	a3,37
+ 350:	0007c703          	lbu	a4,0(a5)
+ 354:	18070263          	beqz	a4,4d8 <DebugLog+0x1c8>
+ 358:	04d71a63          	bne	a4,a3,3ac <DebugLog+0x9c>
+ 35c:	02500993          	li	s3,37
+ 360:	03000b13          	li	s6,48
+ 364:	00900b93          	li	s7,9
+ 368:	00a00a13          	li	s4,10
+ 36c:	06400a93          	li	s5,100
+ 370:	0004c783          	lbu	a5,0(s1)
+ 374:	18078e63          	beqz	a5,510 <DebugLog+0x200>
+ 378:	00148913          	addi	s2,s1,1
+ 37c:	03378c63          	beq	a5,s3,3b4 <DebugLog+0xa4>
+ 380:	01479863          	bne	a5,s4,390 <DebugLog+0x80>
+ 384:	00d00513          	li	a0,13
+ 388:	00000097          	auipc	ra,0x0
+ 38c:	e28080e7          	jalr	-472(ra) # 1b0 <_ZN12_GLOBAL__N_111UartPutcRawEc>
+ 390:	0004c503          	lbu	a0,0(s1)
+ 394:	00000097          	auipc	ra,0x0
+ 398:	e1c080e7          	jalr	-484(ra) # 1b0 <_ZN12_GLOBAL__N_111UartPutcRawEc>
+ 39c:	00040493          	mv	s1,s0
+ 3a0:	00048413          	mv	s0,s1
+ 3a4:	00090493          	mv	s1,s2
+ 3a8:	fc9ff06f          	j	370 <DebugLog+0x60>
+ 3ac:	00178793          	addi	a5,a5,1
+ 3b0:	fa1ff06f          	j	350 <DebugLog+0x40>
+ 3b4:	0014c783          	lbu	a5,1(s1)
+ 3b8:	01379c63          	bne	a5,s3,3d0 <DebugLog+0xc0>
+ 3bc:	02500513          	li	a0,37
+ 3c0:	00000097          	auipc	ra,0x0
+ 3c4:	df0080e7          	jalr	-528(ra) # 1b0 <_ZN12_GLOBAL__N_111UartPutcRawEc>
+ 3c8:	00248913          	addi	s2,s1,2
+ 3cc:	fd1ff06f          	j	39c <DebugLog+0x8c>
+ 3d0:	01679463          	bne	a5,s6,3d8 <DebugLog+0xc8>
+ 3d4:	00248913          	addi	s2,s1,2
+ 3d8:	00000713          	li	a4,0
+ 3dc:	00094783          	lbu	a5,0(s2)
+ 3e0:	fd078613          	addi	a2,a5,-48
+ 3e4:	0ff67593          	zext.b	a1,a2
+ 3e8:	00bbea63          	bltu	s7,a1,3fc <DebugLog+0xec>
+ 3ec:	03470733          	mul	a4,a4,s4
+ 3f0:	00190913          	addi	s2,s2,1
+ 3f4:	00e60733          	add	a4,a2,a4
+ 3f8:	fe5ff06f          	j	3dc <DebugLog+0xcc>
+ 3fc:	07578863          	beq	a5,s5,46c <DebugLog+0x15c>
+ 400:	02faea63          	bltu	s5,a5,434 <DebugLog+0x124>
+ 404:	05800613          	li	a2,88
+ 408:	0ac78463          	beq	a5,a2,4b0 <DebugLog+0x1a0>
+ 40c:	06300713          	li	a4,99
+ 410:	0ae78a63          	beq	a5,a4,4c4 <DebugLog+0x1b4>
+ 414:	02500513          	li	a0,37
+ 418:	00000097          	auipc	ra,0x0
+ 41c:	d98080e7          	jalr	-616(ra) # 1b0 <_ZN12_GLOBAL__N_111UartPutcRawEc>
+ 420:	00094503          	lbu	a0,0(s2)
+ 424:	00040493          	mv	s1,s0
+ 428:	00000097          	auipc	ra,0x0
+ 42c:	d88080e7          	jalr	-632(ra) # 1b0 <_ZN12_GLOBAL__N_111UartPutcRawEc>
+ 430:	0640006f          	j	494 <DebugLog+0x184>
+ 434:	07500613          	li	a2,117
+ 438:	06c78663          	beq	a5,a2,4a4 <DebugLog+0x194>
+ 43c:	07800613          	li	a2,120
+ 440:	06c78863          	beq	a5,a2,4b0 <DebugLog+0x1a0>
+ 444:	07300713          	li	a4,115
+ 448:	fce796e3          	bne	a5,a4,414 <DebugLog+0x104>
+ 44c:	00042503          	lw	a0,0(s0)
+ 450:	00440493          	addi	s1,s0,4
+ 454:	00051663          	bnez	a0,460 <DebugLog+0x150>
+ 458:	80000517          	auipc	a0,0x80000
+ 45c:	bcc50513          	addi	a0,a0,-1076 # 80000024 <__stack_top+0xffff7ff4>
+ 460:	00000097          	auipc	ra,0x0
+ 464:	dd4080e7          	jalr	-556(ra) # 234 <_ZN12_GLOBAL__N_118UartWriteStringRawEPKc.part.0>
+ 468:	02c0006f          	j	494 <DebugLog+0x184>
+ 46c:	00440493          	addi	s1,s0,4
+ 470:	00042403          	lw	s0,0(s0)
+ 474:	00040513          	mv	a0,s0
+ 478:	00045a63          	bgez	s0,48c <DebugLog+0x17c>
+ 47c:	02d00513          	li	a0,45
+ 480:	00000097          	auipc	ra,0x0
+ 484:	d30080e7          	jalr	-720(ra) # 1b0 <_ZN12_GLOBAL__N_111UartPutcRawEc>
+ 488:	40800533          	neg	a0,s0
+ 48c:	00000097          	auipc	ra,0x0
+ 490:	e00080e7          	jalr	-512(ra) # 28c <_ZN12_GLOBAL__N_115UartDecUnsignedEm>
+ 494:	00094783          	lbu	a5,0(s2)
+ 498:	f00784e3          	beqz	a5,3a0 <DebugLog+0x90>
+ 49c:	00190913          	addi	s2,s2,1
+ 4a0:	f01ff06f          	j	3a0 <DebugLog+0x90>
+ 4a4:	00440493          	addi	s1,s0,4
+ 4a8:	00042503          	lw	a0,0(s0)
+ 4ac:	fe1ff06f          	j	48c <DebugLog+0x17c>
+ 4b0:	00042503          	lw	a0,0(s0)
+ 4b4:	00440493          	addi	s1,s0,4
+ 4b8:	00000097          	auipc	ra,0x0
+ 4bc:	d10080e7          	jalr	-752(ra) # 1c8 <_ZN12_GLOBAL__N_19UartHex32Em>
+ 4c0:	fd5ff06f          	j	494 <DebugLog+0x184>
+ 4c4:	00044503          	lbu	a0,0(s0)
+ 4c8:	00440493          	addi	s1,s0,4
+ 4cc:	00000097          	auipc	ra,0x0
+ 4d0:	ce4080e7          	jalr	-796(ra) # 1b0 <_ZN12_GLOBAL__N_111UartPutcRawEc>
+ 4d4:	fc1ff06f          	j	494 <DebugLog+0x184>
+ 4d8:	02812403          	lw	s0,40(sp)
+ 4dc:	02c12083          	lw	ra,44(sp)
+ 4e0:	02012903          	lw	s2,32(sp)
+ 4e4:	01c12983          	lw	s3,28(sp)
+ 4e8:	01812a03          	lw	s4,24(sp)
+ 4ec:	01412a83          	lw	s5,20(sp)
+ 4f0:	01012b03          	lw	s6,16(sp)
+ 4f4:	00c12b83          	lw	s7,12(sp)
+ 4f8:	00812c03          	lw	s8,8(sp)
+ 4fc:	00048513          	mv	a0,s1
+ 500:	02412483          	lw	s1,36(sp)
+ 504:	03010113          	addi	sp,sp,48
+ 508:	00000317          	auipc	t1,0x0
+ 50c:	d2c30067          	jr	-724(t1) # 234 <_ZN12_GLOBAL__N_118UartWriteStringRawEPKc.part.0>
+ 510:	02c12083          	lw	ra,44(sp)
+ 514:	02812403          	lw	s0,40(sp)
+ 518:	02412483          	lw	s1,36(sp)
+ 51c:	02012903          	lw	s2,32(sp)
+ 520:	01c12983          	lw	s3,28(sp)
+ 524:	01812a03          	lw	s4,24(sp)
+ 528:	01412a83          	lw	s5,20(sp)
+ 52c:	01012b03          	lw	s6,16(sp)
+ 530:	00c12b83          	lw	s7,12(sp)
+ 534:	00812c03          	lw	s8,8(sp)
+ 538:	03010113          	addi	sp,sp,48
+ 53c:	00008067          	ret
+ 540:	00008067          	ret

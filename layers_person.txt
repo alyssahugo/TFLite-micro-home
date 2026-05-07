@@ -1,0 +1,190 @@
+TFLM Person Detection Layer Report
+run_id=1 (1=person,2=noperson)
+schema_version=3
+------------------------------------------------------------
+OP 0: DEPTHWISE_CONV_2D
+  in0 (activation): t88 type=int8 [1,96,96,1] bytes=9216
+  w   (kernel): t0 type=int8 [1,3,3,8] bytes=72
+  b   (bias/params): t33 type=int32 [8] bytes=32
+  out0 (activation): t34 type=int8 [1,48,48,8] bytes=18432
+
+OP 1: DEPTHWISE_CONV_2D
+  in0 (activation): t34 type=int8 [1,48,48,8] bytes=18432
+  w   (kernel): t9 type=int8 [1,3,3,8] bytes=72
+  b   (bias/params): t52 type=int32 [8] bytes=32
+  out0 (activation): t51 type=int8 [1,48,48,8] bytes=18432
+
+OP 2: CONV_2D
+  in0 (activation): t51 type=int8 [1,48,48,8] bytes=18432
+  w   (kernel): t10 type=int8 [16,1,1,8] bytes=128
+  b   (bias/params): t53 type=int32 [16] bytes=64
+  out0 (activation): t54 type=int8 [1,48,48,16] bytes=36864
+
+OP 3: DEPTHWISE_CONV_2D
+  in0 (activation): t54 type=int8 [1,48,48,16] bytes=36864
+  w   (kernel): t11 type=int8 [1,3,3,16] bytes=144
+  b   (bias/params): t56 type=int32 [16] bytes=64
+  out0 (activation): t55 type=int8 [1,24,24,16] bytes=9216
+
+OP 4: CONV_2D
+  in0 (activation): t55 type=int8 [1,24,24,16] bytes=9216
+  w   (kernel): t12 type=int8 [32,1,1,16] bytes=512
+  b   (bias/params): t57 type=int32 [32] bytes=128
+  out0 (activation): t58 type=int8 [1,24,24,32] bytes=18432
+
+OP 5: DEPTHWISE_CONV_2D
+  in0 (activation): t58 type=int8 [1,24,24,32] bytes=18432
+  w   (kernel): t13 type=int8 [1,3,3,32] bytes=288
+  b   (bias/params): t60 type=int32 [32] bytes=128
+  out0 (activation): t59 type=int8 [1,24,24,32] bytes=18432
+
+OP 6: CONV_2D
+  in0 (activation): t59 type=int8 [1,24,24,32] bytes=18432
+  w   (kernel): t14 type=int8 [32,1,1,32] bytes=1024
+  b   (bias/params): t61 type=int32 [32] bytes=128
+  out0 (activation): t62 type=int8 [1,24,24,32] bytes=18432
+
+OP 7: DEPTHWISE_CONV_2D
+  in0 (activation): t62 type=int8 [1,24,24,32] bytes=18432
+  w   (kernel): t15 type=int8 [1,3,3,32] bytes=288
+  b   (bias/params): t64 type=int32 [32] bytes=128
+  out0 (activation): t63 type=int8 [1,12,12,32] bytes=4608
+
+OP 8: CONV_2D
+  in0 (activation): t63 type=int8 [1,12,12,32] bytes=4608
+  w   (kernel): t16 type=int8 [64,1,1,32] bytes=2048
+  b   (bias/params): t65 type=int32 [64] bytes=256
+  out0 (activation): t66 type=int8 [1,12,12,64] bytes=9216
+
+OP 9: DEPTHWISE_CONV_2D
+  in0 (activation): t66 type=int8 [1,12,12,64] bytes=9216
+  w   (kernel): t17 type=int8 [1,3,3,64] bytes=576
+  b   (bias/params): t68 type=int32 [64] bytes=256
+  out0 (activation): t67 type=int8 [1,12,12,64] bytes=9216
+
+OP 10: CONV_2D
+  in0 (activation): t67 type=int8 [1,12,12,64] bytes=9216
+  w   (kernel): t18 type=int8 [64,1,1,64] bytes=4096
+  b   (bias/params): t69 type=int32 [64] bytes=256
+  out0 (activation): t70 type=int8 [1,12,12,64] bytes=9216
+
+OP 11: DEPTHWISE_CONV_2D
+  in0 (activation): t70 type=int8 [1,12,12,64] bytes=9216
+  w   (kernel): t19 type=int8 [1,3,3,64] bytes=576
+  b   (bias/params): t72 type=int32 [64] bytes=256
+  out0 (activation): t71 type=int8 [1,6,6,64] bytes=2304
+
+OP 12: CONV_2D
+  in0 (activation): t71 type=int8 [1,6,6,64] bytes=2304
+  w   (kernel): t20 type=int8 [128,1,1,64] bytes=8192
+  b   (bias/params): t73 type=int32 [128] bytes=512
+  out0 (activation): t74 type=int8 [1,6,6,128] bytes=4608
+
+OP 13: DEPTHWISE_CONV_2D
+  in0 (activation): t74 type=int8 [1,6,6,128] bytes=4608
+  w   (kernel): t21 type=int8 [1,3,3,128] bytes=1152
+  b   (bias/params): t76 type=int32 [128] bytes=512
+  out0 (activation): t75 type=int8 [1,6,6,128] bytes=4608
+
+OP 14: CONV_2D
+  in0 (activation): t75 type=int8 [1,6,6,128] bytes=4608
+  w   (kernel): t22 type=int8 [128,1,1,128] bytes=16384
+  b   (bias/params): t77 type=int32 [128] bytes=512
+  out0 (activation): t78 type=int8 [1,6,6,128] bytes=4608
+
+OP 15: DEPTHWISE_CONV_2D
+  in0 (activation): t78 type=int8 [1,6,6,128] bytes=4608
+  w   (kernel): t23 type=int8 [1,3,3,128] bytes=1152
+  b   (bias/params): t80 type=int32 [128] bytes=512
+  out0 (activation): t79 type=int8 [1,6,6,128] bytes=4608
+
+OP 16: CONV_2D
+  in0 (activation): t79 type=int8 [1,6,6,128] bytes=4608
+  w   (kernel): t24 type=int8 [128,1,1,128] bytes=16384
+  b   (bias/params): t81 type=int32 [128] bytes=512
+  out0 (activation): t82 type=int8 [1,6,6,128] bytes=4608
+
+OP 17: DEPTHWISE_CONV_2D
+  in0 (activation): t82 type=int8 [1,6,6,128] bytes=4608
+  w   (kernel): t25 type=int8 [1,3,3,128] bytes=1152
+  b   (bias/params): t84 type=int32 [128] bytes=512
+  out0 (activation): t83 type=int8 [1,6,6,128] bytes=4608
+
+OP 18: CONV_2D
+  in0 (activation): t83 type=int8 [1,6,6,128] bytes=4608
+  w   (kernel): t26 type=int8 [128,1,1,128] bytes=16384
+  b   (bias/params): t85 type=int32 [128] bytes=512
+  out0 (activation): t86 type=int8 [1,6,6,128] bytes=4608
+
+OP 19: DEPTHWISE_CONV_2D
+  in0 (activation): t86 type=int8 [1,6,6,128] bytes=4608
+  w   (kernel): t1 type=int8 [1,3,3,128] bytes=1152
+  b   (bias/params): t36 type=int32 [128] bytes=512
+  out0 (activation): t35 type=int8 [1,6,6,128] bytes=4608
+
+OP 20: CONV_2D
+  in0 (activation): t35 type=int8 [1,6,6,128] bytes=4608
+  w   (kernel): t2 type=int8 [128,1,1,128] bytes=16384
+  b   (bias/params): t37 type=int32 [128] bytes=512
+  out0 (activation): t38 type=int8 [1,6,6,128] bytes=4608
+
+OP 21: DEPTHWISE_CONV_2D
+  in0 (activation): t38 type=int8 [1,6,6,128] bytes=4608
+  w   (kernel): t3 type=int8 [1,3,3,128] bytes=1152
+  b   (bias/params): t40 type=int32 [128] bytes=512
+  out0 (activation): t39 type=int8 [1,6,6,128] bytes=4608
+
+OP 22: CONV_2D
+  in0 (activation): t39 type=int8 [1,6,6,128] bytes=4608
+  w   (kernel): t4 type=int8 [128,1,1,128] bytes=16384
+  b   (bias/params): t41 type=int32 [128] bytes=512
+  out0 (activation): t42 type=int8 [1,6,6,128] bytes=4608
+
+OP 23: DEPTHWISE_CONV_2D
+  in0 (activation): t42 type=int8 [1,6,6,128] bytes=4608
+  w   (kernel): t5 type=int8 [1,3,3,128] bytes=1152
+  b   (bias/params): t44 type=int32 [128] bytes=512
+  out0 (activation): t43 type=int8 [1,3,3,128] bytes=1152
+
+OP 24: CONV_2D
+  in0 (activation): t43 type=int8 [1,3,3,128] bytes=1152
+  w   (kernel): t6 type=int8 [256,1,1,128] bytes=32768
+  b   (bias/params): t45 type=int32 [256] bytes=1024
+  out0 (activation): t46 type=int8 [1,3,3,256] bytes=2304
+
+OP 25: DEPTHWISE_CONV_2D
+  in0 (activation): t46 type=int8 [1,3,3,256] bytes=2304
+  w   (kernel): t7 type=int8 [1,3,3,256] bytes=2304
+  b   (bias/params): t48 type=int32 [256] bytes=1024
+  out0 (activation): t47 type=int8 [1,3,3,256] bytes=2304
+
+OP 26: CONV_2D
+  in0 (activation): t47 type=int8 [1,3,3,256] bytes=2304
+  w   (kernel): t8 type=int8 [256,1,1,256] bytes=65536
+  b   (bias/params): t49 type=int32 [256] bytes=1024
+  out0 (activation): t50 type=int8 [1,3,3,256] bytes=2304
+
+OP 27: AVERAGE_POOL_2D
+  in0 (activation): t50 type=int8 [1,3,3,256] bytes=2304
+  w   (kernel): (none)
+  b   (bias/params): (none)
+  out0 (activation): t27 type=int8 [1,1,1,256] bytes=256
+
+OP 28: CONV_2D
+  in0 (activation): t27 type=int8 [1,1,1,256] bytes=256
+  w   (kernel): t30 type=int8 [2,1,1,256] bytes=512
+  b   (bias/params): t29 type=int32 [2] bytes=8
+  out0 (activation): t28 type=int8 [1,1,1,2] bytes=2
+
+OP 29: RESHAPE
+  in0 (activation): t28 type=int8 [1,1,1,2] bytes=2
+  w   (kernel): t32 type=int32 [2] bytes=8
+  b   (bias/params): (none)
+  out0 (activation): t31 type=int8 [1,2] bytes=2
+
+OP 30: SOFTMAX
+  in0 (activation): t31 type=int8 [1,2] bytes=2
+  w   (kernel): (none)
+  b   (bias/params): (none)
+  out0 (activation): t87 type=int8 [1,2] bytes=2
+

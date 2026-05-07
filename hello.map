@@ -1,0 +1,38 @@
+
+Merging object attributes
+
+
+There are no discarded input sections
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+                0x00000000                        . = 0x0
+
+.text           0x00000000       0x40
+ *(.text*)
+ .text          0x00000000       0x40 /tmp/ccFBYuJO.o
+                0x00000000                _start
+
+.rodata
+ *(.rodata*)
+
+.data           0x00000040        0x0
+ *(.data*)
+ .data          0x00000040        0x0 /tmp/ccFBYuJO.o
+
+.bss            0x00000040        0x0
+ *(.bss*)
+ .bss           0x00000040        0x0 /tmp/ccFBYuJO.o
+ *(COMMON)
+LOAD /tmp/ccFBYuJO.o
+OUTPUT(hello.elf elf32-littleriscv)
+
+.riscv.attributes
+                0x00000000       0x28
+ .riscv.attributes
+                0x00000000       0x28 /tmp/ccFBYuJO.o

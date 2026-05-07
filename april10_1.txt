@@ -1,0 +1,315 @@
+
+gen/riscv32_generic_x86_64_default_gcc/bin/person_detection:     file format elf32-littleriscv
+
+
+Disassembly of section .text:
+
+00000000 <_start>:
+   0:	80048117          	auipc	sp,0x80048
+   4:	14010113          	addi	sp,sp,320 # 80048140 <__stack_top+0x0>
+   8:	80000517          	auipc	a0,0x80000
+   c:	13850513          	addi	a0,a0,312 # 80000140 <__stack_top+0xfffb8000>
+  10:	80000597          	auipc	a1,0x80000
+  14:	13058593          	addi	a1,a1,304 # 80000140 <__stack_top+0xfffb8000>
+  18:	00b57863          	bgeu	a0,a1,28 <_start+0x28>
+  1c:	00052023          	sw	zero,0(a0)
+  20:	00450513          	addi	a0,a0,4
+  24:	ff5ff06f          	j	18 <_start+0x18>
+  28:	00000097          	auipc	ra,0x0
+  2c:	00c080e7          	jalr	12(ra) # 34 <main>
+  30:	0000006f          	j	30 <_start+0x30>
+
+00000034 <main>:
+  34:	ff010113          	addi	sp,sp,-16
+  38:	00112623          	sw	ra,12(sp)
+  3c:	00000097          	auipc	ra,0x0
+  40:	174080e7          	jalr	372(ra) # 1b0 <setup>
+  44:	00000097          	auipc	ra,0x0
+  48:	448080e7          	jalr	1096(ra) # 48c <loop>
+  4c:	0000006f          	j	4c <main+0x18>
+
+00000050 <_ZL7RawPutsPKc>:
+  50:	40600737          	lui	a4,0x40600
+  54:	00054783          	lbu	a5,0(a0)
+  58:	00078863          	beqz	a5,68 <_ZL7RawPutsPKc+0x18>
+  5c:	00150513          	addi	a0,a0,1
+  60:	00f70223          	sb	a5,4(a4) # 40600004 <loop+0x405ffb78>
+  64:	ff1ff06f          	j	54 <_ZL7RawPutsPKc+0x4>
+  68:	00008067          	ret
+
+0000006c <_ZL10RawNewlinev>:
+  6c:	406007b7          	lui	a5,0x40600
+  70:	00d00713          	li	a4,13
+  74:	00e78223          	sb	a4,4(a5) # 40600004 <loop+0x405ffb78>
+  78:	00a00713          	li	a4,10
+  7c:	00e78223          	sb	a4,4(a5)
+  80:	00008067          	ret
+
+00000084 <_ZL12RawPutDecIntl.part.0>:
+  84:	ff010113          	addi	sp,sp,-16
+  88:	00055a63          	bgez	a0,9c <_ZL12RawPutDecIntl.part.0+0x18>
+  8c:	406007b7          	lui	a5,0x40600
+  90:	02d00713          	li	a4,45
+  94:	00e78223          	sb	a4,4(a5) # 40600004 <loop+0x405ffb78>
+  98:	40a00533          	neg	a0,a0
+  9c:	00000713          	li	a4,0
+  a0:	00a00693          	li	a3,10
+  a4:	00070793          	mv	a5,a4
+  a8:	02051263          	bnez	a0,cc <_ZL12RawPutDecIntl.part.0+0x48>
+  ac:	fff00613          	li	a2,-1
+  b0:	40600737          	lui	a4,0x40600
+  b4:	fff78793          	addi	a5,a5,-1
+  b8:	02c78863          	beq	a5,a2,e8 <_ZL12RawPutDecIntl.part.0+0x64>
+  bc:	00f106b3          	add	a3,sp,a5
+  c0:	0006c683          	lbu	a3,0(a3)
+  c4:	00d70223          	sb	a3,4(a4) # 40600004 <loop+0x405ffb78>
+  c8:	fedff06f          	j	b4 <_ZL12RawPutDecIntl.part.0+0x30>
+  cc:	02d567b3          	rem	a5,a0,a3
+  d0:	00e10633          	add	a2,sp,a4
+  d4:	00170713          	addi	a4,a4,1
+  d8:	03078793          	addi	a5,a5,48
+  dc:	00f60023          	sb	a5,0(a2)
+  e0:	02d54533          	div	a0,a0,a3
+  e4:	fc1ff06f          	j	a4 <_ZL12RawPutDecIntl.part.0+0x20>
+  e8:	01010113          	addi	sp,sp,16
+  ec:	00008067          	ret
+
+000000f0 <_ZL12RawPutDecIntl>:
+  f0:	00051a63          	bnez	a0,104 <_ZL12RawPutDecIntl+0x14>
+  f4:	406007b7          	lui	a5,0x40600
+  f8:	03000713          	li	a4,48
+  fc:	00e78223          	sb	a4,4(a5) # 40600004 <loop+0x405ffb78>
+ 100:	00008067          	ret
+ 104:	00000317          	auipc	t1,0x0
+ 108:	f8030067          	jr	-128(t1) # 84 <_ZL12RawPutDecIntl.part.0>
+
+0000010c <_ZL14PrintMatrix2x2PKcPA2_Kl>:
+ 10c:	ff010113          	addi	sp,sp,-16
+ 110:	00112623          	sw	ra,12(sp)
+ 114:	00812423          	sw	s0,8(sp)
+ 118:	00912223          	sw	s1,4(sp)
+ 11c:	01212023          	sw	s2,0(sp)
+ 120:	00058913          	mv	s2,a1
+ 124:	00000097          	auipc	ra,0x0
+ 128:	f2c080e7          	jalr	-212(ra) # 50 <_ZL7RawPutsPKc>
+ 12c:	80000517          	auipc	a0,0x80000
+ 130:	ed450513          	addi	a0,a0,-300 # 80000000 <__stack_top+0xfffb7ec0>
+ 134:	00000097          	auipc	ra,0x0
+ 138:	f1c080e7          	jalr	-228(ra) # 50 <_ZL7RawPutsPKc>
+ 13c:	00000097          	auipc	ra,0x0
+ 140:	f30080e7          	jalr	-208(ra) # 6c <_ZL10RawNewlinev>
+ 144:	00092503          	lw	a0,0(s2)
+ 148:	40600437          	lui	s0,0x40600
+ 14c:	02000493          	li	s1,32
+ 150:	00000097          	auipc	ra,0x0
+ 154:	fa0080e7          	jalr	-96(ra) # f0 <_ZL12RawPutDecIntl>
+ 158:	00940223          	sb	s1,4(s0) # 40600004 <loop+0x405ffb78>
+ 15c:	00492503          	lw	a0,4(s2)
+ 160:	00000097          	auipc	ra,0x0
+ 164:	f90080e7          	jalr	-112(ra) # f0 <_ZL12RawPutDecIntl>
+ 168:	00940223          	sb	s1,4(s0)
+ 16c:	00000097          	auipc	ra,0x0
+ 170:	f00080e7          	jalr	-256(ra) # 6c <_ZL10RawNewlinev>
+ 174:	00892503          	lw	a0,8(s2)
+ 178:	00000097          	auipc	ra,0x0
+ 17c:	f78080e7          	jalr	-136(ra) # f0 <_ZL12RawPutDecIntl>
+ 180:	00940223          	sb	s1,4(s0)
+ 184:	00c92503          	lw	a0,12(s2)
+ 188:	00000097          	auipc	ra,0x0
+ 18c:	f68080e7          	jalr	-152(ra) # f0 <_ZL12RawPutDecIntl>
+ 190:	00940223          	sb	s1,4(s0)
+ 194:	00812403          	lw	s0,8(sp)
+ 198:	00c12083          	lw	ra,12(sp)
+ 19c:	00412483          	lw	s1,4(sp)
+ 1a0:	00012903          	lw	s2,0(sp)
+ 1a4:	01010113          	addi	sp,sp,16
+ 1a8:	00000317          	auipc	t1,0x0
+ 1ac:	ec430067          	jr	-316(t1) # 6c <_ZL10RawNewlinev>
+
+000001b0 <setup>:
+ 1b0:	80000517          	auipc	a0,0x80000
+ 1b4:	fc010113          	addi	sp,sp,-64
+ 1b8:	ec850513          	addi	a0,a0,-312 # 80000078 <__stack_top+0xfffb7f38>
+ 1bc:	02112e23          	sw	ra,60(sp)
+ 1c0:	02812c23          	sw	s0,56(sp)
+ 1c4:	02912a23          	sw	s1,52(sp)
+ 1c8:	03312623          	sw	s3,44(sp)
+ 1cc:	03412423          	sw	s4,40(sp)
+ 1d0:	03212823          	sw	s2,48(sp)
+ 1d4:	03512223          	sw	s5,36(sp)
+ 1d8:	03612023          	sw	s6,32(sp)
+ 1dc:	01712e23          	sw	s7,28(sp)
+ 1e0:	00000097          	auipc	ra,0x0
+ 1e4:	e70080e7          	jalr	-400(ra) # 50 <_ZL7RawPutsPKc>
+ 1e8:	00000097          	auipc	ra,0x0
+ 1ec:	e84080e7          	jalr	-380(ra) # 6c <_ZL10RawNewlinev>
+ 1f0:	80000517          	auipc	a0,0x80000
+ 1f4:	ea850513          	addi	a0,a0,-344 # 80000098 <__stack_top+0xfffb7f58>
+ 1f8:	00000097          	auipc	ra,0x0
+ 1fc:	e58080e7          	jalr	-424(ra) # 50 <_ZL7RawPutsPKc>
+ 200:	80000517          	auipc	a0,0x80000
+ 204:	e0050513          	addi	a0,a0,-512 # 80000000 <__stack_top+0xfffb7ec0>
+ 208:	00000097          	auipc	ra,0x0
+ 20c:	e48080e7          	jalr	-440(ra) # 50 <_ZL7RawPutsPKc>
+ 210:	00000097          	auipc	ra,0x0
+ 214:	e5c080e7          	jalr	-420(ra) # 6c <_ZL10RawNewlinev>
+ 218:	80000797          	auipc	a5,0x80000
+ 21c:	dec78793          	addi	a5,a5,-532 # 80000004 <__stack_top+0xfffb7ec4>
+ 220:	01078493          	addi	s1,a5,16
+ 224:	05078413          	addi	s0,a5,80
+ 228:	406009b7          	lui	s3,0x40600
+ 22c:	02000a13          	li	s4,32
+ 230:	ff048913          	addi	s2,s1,-16
+ 234:	00092503          	lw	a0,0(s2)
+ 238:	00490913          	addi	s2,s2,4
+ 23c:	00000097          	auipc	ra,0x0
+ 240:	eb4080e7          	jalr	-332(ra) # f0 <_ZL12RawPutDecIntl>
+ 244:	01498223          	sb	s4,4(s3) # 40600004 <loop+0x405ffb78>
+ 248:	ff2496e3          	bne	s1,s2,234 <setup+0x84>
+ 24c:	01048493          	addi	s1,s1,16
+ 250:	00000097          	auipc	ra,0x0
+ 254:	e1c080e7          	jalr	-484(ra) # 6c <_ZL10RawNewlinev>
+ 258:	fc941ce3          	bne	s0,s1,230 <setup+0x80>
+ 25c:	80000517          	auipc	a0,0x80000
+ 260:	e4450513          	addi	a0,a0,-444 # 800000a0 <__stack_top+0xfffb7f60>
+ 264:	00000097          	auipc	ra,0x0
+ 268:	dec080e7          	jalr	-532(ra) # 50 <_ZL7RawPutsPKc>
+ 26c:	80000517          	auipc	a0,0x80000
+ 270:	80000417          	auipc	s0,0x80000
+ 274:	d9450513          	addi	a0,a0,-620 # 80000000 <__stack_top+0xfffb7ec0>
+ 278:	dd440413          	addi	s0,s0,-556 # 80000044 <__stack_top+0xfffb7f04>
+ 27c:	00000097          	auipc	ra,0x0
+ 280:	dd4080e7          	jalr	-556(ra) # 50 <_ZL7RawPutsPKc>
+ 284:	02440993          	addi	s3,s0,36
+ 288:	00000097          	auipc	ra,0x0
+ 28c:	de4080e7          	jalr	-540(ra) # 6c <_ZL10RawNewlinev>
+ 290:	406004b7          	lui	s1,0x40600
+ 294:	02000913          	li	s2,32
+ 298:	00042503          	lw	a0,0(s0)
+ 29c:	00c40413          	addi	s0,s0,12
+ 2a0:	00000097          	auipc	ra,0x0
+ 2a4:	e50080e7          	jalr	-432(ra) # f0 <_ZL12RawPutDecIntl>
+ 2a8:	01248223          	sb	s2,4(s1) # 40600004 <loop+0x405ffb78>
+ 2ac:	ff842503          	lw	a0,-8(s0)
+ 2b0:	00000097          	auipc	ra,0x0
+ 2b4:	e40080e7          	jalr	-448(ra) # f0 <_ZL12RawPutDecIntl>
+ 2b8:	01248223          	sb	s2,4(s1)
+ 2bc:	ffc42503          	lw	a0,-4(s0)
+ 2c0:	00000097          	auipc	ra,0x0
+ 2c4:	e30080e7          	jalr	-464(ra) # f0 <_ZL12RawPutDecIntl>
+ 2c8:	01248223          	sb	s2,4(s1)
+ 2cc:	00000097          	auipc	ra,0x0
+ 2d0:	da0080e7          	jalr	-608(ra) # 6c <_ZL10RawNewlinev>
+ 2d4:	fd3412e3          	bne	s0,s3,298 <setup+0xe8>
+ 2d8:	80000517          	auipc	a0,0x80000
+ 2dc:	dd050513          	addi	a0,a0,-560 # 800000a8 <__stack_top+0xfffb7f68>
+ 2e0:	00000097          	auipc	ra,0x0
+ 2e4:	d70080e7          	jalr	-656(ra) # 50 <_ZL7RawPutsPKc>
+ 2e8:	00100513          	li	a0,1
+ 2ec:	00000097          	auipc	ra,0x0
+ 2f0:	d98080e7          	jalr	-616(ra) # 84 <_ZL12RawPutDecIntl.part.0>
+ 2f4:	00000097          	auipc	ra,0x0
+ 2f8:	d78080e7          	jalr	-648(ra) # 6c <_ZL10RawNewlinev>
+ 2fc:	01a00793          	li	a5,26
+ 300:	00f12023          	sw	a5,0(sp)
+ 304:	02000793          	li	a5,32
+ 308:	00f12223          	sw	a5,4(sp)
+ 30c:	80000517          	auipc	a0,0x80000
+ 310:	03200793          	li	a5,50
+ 314:	00f12423          	sw	a5,8(sp)
+ 318:	00010593          	mv	a1,sp
+ 31c:	03800793          	li	a5,56
+ 320:	da450513          	addi	a0,a0,-604 # 800000b0 <__stack_top+0xfffb7f70>
+ 324:	00f12623          	sw	a5,12(sp)
+ 328:	00000097          	auipc	ra,0x0
+ 32c:	de4080e7          	jalr	-540(ra) # 10c <_ZL14PrintMatrix2x2PKcPA2_Kl>
+ 330:	80000597          	auipc	a1,0x80000
+ 334:	80000517          	auipc	a0,0x80000
+ 338:	d3858593          	addi	a1,a1,-712 # 80000068 <__stack_top+0xfffb7f28>
+ 33c:	d8450513          	addi	a0,a0,-636 # 800000b8 <__stack_top+0xfffb7f78>
+ 340:	00000097          	auipc	ra,0x0
+ 344:	dcc080e7          	jalr	-564(ra) # 10c <_ZL14PrintMatrix2x2PKcPA2_Kl>
+ 348:	80000517          	auipc	a0,0x80000
+ 34c:	d7c50513          	addi	a0,a0,-644 # 800000c4 <__stack_top+0xfffb7f84>
+ 350:	80000997          	auipc	s3,0x80000
+ 354:	00000097          	auipc	ra,0x0
+ 358:	cfc080e7          	jalr	-772(ra) # 50 <_ZL7RawPutsPKc>
+ 35c:	00000493          	li	s1,0
+ 360:	00000097          	auipc	ra,0x0
+ 364:	d0c080e7          	jalr	-756(ra) # 6c <_ZL10RawNewlinev>
+ 368:	00100a13          	li	s4,1
+ 36c:	d1898993          	addi	s3,s3,-744 # 80000068 <__stack_top+0xfffb7f28>
+ 370:	00100b93          	li	s7,1
+ 374:	00349913          	slli	s2,s1,0x3
+ 378:	00000413          	li	s0,0
+ 37c:	80000517          	auipc	a0,0x80000
+ 380:	d5450513          	addi	a0,a0,-684 # 800000d0 <__stack_top+0xfffb7f90>
+ 384:	00000097          	auipc	ra,0x0
+ 388:	ccc080e7          	jalr	-820(ra) # 50 <_ZL7RawPutsPKc>
+ 38c:	00048513          	mv	a0,s1
+ 390:	00000097          	auipc	ra,0x0
+ 394:	d60080e7          	jalr	-672(ra) # f0 <_ZL12RawPutDecIntl>
+ 398:	80000517          	auipc	a0,0x80000
+ 39c:	d4050513          	addi	a0,a0,-704 # 800000d8 <__stack_top+0xfffb7f98>
+ 3a0:	00000097          	auipc	ra,0x0
+ 3a4:	cb0080e7          	jalr	-848(ra) # 50 <_ZL7RawPutsPKc>
+ 3a8:	00040513          	mv	a0,s0
+ 3ac:	00000097          	auipc	ra,0x0
+ 3b0:	d44080e7          	jalr	-700(ra) # f0 <_ZL12RawPutDecIntl>
+ 3b4:	80000517          	auipc	a0,0x80000
+ 3b8:	d2850513          	addi	a0,a0,-728 # 800000dc <__stack_top+0xfffb7f9c>
+ 3bc:	00000097          	auipc	ra,0x0
+ 3c0:	c94080e7          	jalr	-876(ra) # 50 <_ZL7RawPutsPKc>
+ 3c4:	01210b33          	add	s6,sp,s2
+ 3c8:	000b2503          	lw	a0,0(s6)
+ 3cc:	00000097          	auipc	ra,0x0
+ 3d0:	d24080e7          	jalr	-732(ra) # f0 <_ZL12RawPutDecIntl>
+ 3d4:	80000517          	auipc	a0,0x80000
+ 3d8:	d1050513          	addi	a0,a0,-752 # 800000e4 <__stack_top+0xfffb7fa4>
+ 3dc:	00000097          	auipc	ra,0x0
+ 3e0:	c74080e7          	jalr	-908(ra) # 50 <_ZL7RawPutsPKc>
+ 3e4:	012987b3          	add	a5,s3,s2
+ 3e8:	0007aa83          	lw	s5,0(a5)
+ 3ec:	000a8513          	mv	a0,s5
+ 3f0:	00000097          	auipc	ra,0x0
+ 3f4:	d00080e7          	jalr	-768(ra) # f0 <_ZL12RawPutDecIntl>
+ 3f8:	000b2783          	lw	a5,0(s6)
+ 3fc:	06fa9c63          	bne	s5,a5,474 <setup+0x2c4>
+ 400:	80000517          	auipc	a0,0x80000
+ 404:	cf050513          	addi	a0,a0,-784 # 800000f0 <__stack_top+0xfffb7fb0>
+ 408:	00000097          	auipc	ra,0x0
+ 40c:	c48080e7          	jalr	-952(ra) # 50 <_ZL7RawPutsPKc>
+ 410:	00000097          	auipc	ra,0x0
+ 414:	c5c080e7          	jalr	-932(ra) # 6c <_ZL10RawNewlinev>
+ 418:	00490913          	addi	s2,s2,4
+ 41c:	05741863          	bne	s0,s7,46c <setup+0x2bc>
+ 420:	04849263          	bne	s1,s0,464 <setup+0x2b4>
+ 424:	80000517          	auipc	a0,0x80000
+ 428:	cdc50513          	addi	a0,a0,-804 # 80000100 <__stack_top+0xfffb7fc0>
+ 42c:	000a1663          	bnez	s4,438 <setup+0x288>
+ 430:	80000517          	auipc	a0,0x80000
+ 434:	cdc50513          	addi	a0,a0,-804 # 8000010c <__stack_top+0xfffb7fcc>
+ 438:	00000097          	auipc	ra,0x0
+ 43c:	c18080e7          	jalr	-1000(ra) # 50 <_ZL7RawPutsPKc>
+ 440:	00000097          	auipc	ra,0x0
+ 444:	c2c080e7          	jalr	-980(ra) # 6c <_ZL10RawNewlinev>
+ 448:	80000517          	auipc	a0,0x80000
+ 44c:	cd050513          	addi	a0,a0,-816 # 80000118 <__stack_top+0xfffb7fd8>
+ 450:	00000097          	auipc	ra,0x0
+ 454:	c00080e7          	jalr	-1024(ra) # 50 <_ZL7RawPutsPKc>
+ 458:	00000097          	auipc	ra,0x0
+ 45c:	c14080e7          	jalr	-1004(ra) # 6c <_ZL10RawNewlinev>
+ 460:	0000006f          	j	460 <setup+0x2b0>
+ 464:	00100493          	li	s1,1
+ 468:	f0dff06f          	j	374 <setup+0x1c4>
+ 46c:	00100413          	li	s0,1
+ 470:	f0dff06f          	j	37c <setup+0x1cc>
+ 474:	80000517          	auipc	a0,0x80000
+ 478:	c8450513          	addi	a0,a0,-892 # 800000f8 <__stack_top+0xfffb7fb8>
+ 47c:	00000097          	auipc	ra,0x0
+ 480:	bd4080e7          	jalr	-1068(ra) # 50 <_ZL7RawPutsPKc>
+ 484:	00000a13          	li	s4,0
+ 488:	f89ff06f          	j	410 <setup+0x260>
+
+0000048c <loop>:
+ 48c:	00008067          	ret
