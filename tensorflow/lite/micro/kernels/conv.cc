@@ -24,10 +24,14 @@ limitations under the License.
 #include "tensorflow/lite/micro/kernels/kernel_util.h"
 #include "tensorflow/lite/micro/micro_log.h"
 
+
 namespace tflite {
 namespace {
 
+
+
 TfLiteStatus ConvEval(TfLiteContext* context, TfLiteNode* node) {
+
   const TfLiteEvalTensor* input =
       tflite::micro::GetEvalInput(context, node, kConvInputTensor);
   const TfLiteEvalTensor* filter =
@@ -55,7 +59,6 @@ TfLiteStatus ConvEval(TfLiteContext* context, TfLiteNode* node) {
       micro_context->GetTensorCompressionData(node, kConvBiasTensor);
 
 #endif  // USE_TFLM_COMPRESSION
-
   switch (input->type) {  // Already know in/out types are same.
     case kTfLiteFloat32: {
       tflite::reference_ops::Conv(
@@ -150,7 +153,31 @@ TfLiteStatus ConvEval(TfLiteContext* context, TfLiteNode* node) {
               tflite::micro::GetTensorData<int8_t>(output));
           break;
         }
+//         case kTfLiteInt8: {
+//           reference_integer_ops::ConvPerChannel(
+//               ConvParamsQuantized(params, data),
+//               data.per_channel_output_multiplier, data.per_channel_output_shift,
+//               tflite::micro::GetTensorShape(input),
+//               tflite::micro::GetTensorData<int8_t>(input),
+//               tflite::micro::GetTensorShape(filter),
+// #ifdef USE_TFLM_COMPRESSION
+//               tflite::micro::GetTensorData<int8_t>(micro_context, filter,
+//                                                    weights_comp_td,
+//                                                    data.weights_scratch_index),
+//               tflite::micro::GetTensorShape(bias),
+//               tflite::micro::GetOptionalTensorData<int32_t>(
+//                   micro_context, bias, bias_comp_td, data.bias_scratch_index),
+// #else   // USE_TFLM_COMPRESSION
+//               tflite::micro::GetTensorData<int8_t>(filter),
+//               tflite::micro::GetTensorShape(bias),
+//               tflite::micro::GetOptionalTensorData<int32_t>(bias),
+// #endif  // USE_TFLM_COMPRESSION
+//               tflite::micro::GetTensorShape(output),
+//               tflite::micro::GetTensorData<int8_t>(output));
+//           break;
+//         }
         case kTfLiteInt8: {
+
           reference_integer_ops::ConvPerChannel(
               ConvParamsQuantized(params, data),
               data.per_channel_output_multiplier, data.per_channel_output_shift,
@@ -164,13 +191,15 @@ TfLiteStatus ConvEval(TfLiteContext* context, TfLiteNode* node) {
               tflite::micro::GetTensorShape(bias),
               tflite::micro::GetOptionalTensorData<int32_t>(
                   micro_context, bias, bias_comp_td, data.bias_scratch_index),
-#else   // USE_TFLM_COMPRESSION
+#else
               tflite::micro::GetTensorData<int8_t>(filter),
               tflite::micro::GetTensorShape(bias),
               tflite::micro::GetOptionalTensorData<int32_t>(bias),
-#endif  // USE_TFLM_COMPRESSION
+#endif
               tflite::micro::GetTensorShape(output),
               tflite::micro::GetTensorData<int8_t>(output));
+
+
           break;
         }
         default:

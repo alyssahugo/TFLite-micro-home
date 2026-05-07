@@ -13,14 +13,29 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
+// #include "tensorflow/lite/micro/examples/person_detection/detection_responder.h"
+
+// #include "tensorflow/lite/micro/micro_log.h"
+
+// // This dummy implementation writes person and no person scores to the error
+// // console. Real applications will want to take some custom action instead, and
+// // should implement their own versions of this function.
+// void RespondToDetection(int8_t person_score, int8_t no_person_score) {
+//   MicroPrintf("person score:%d no person score %d", person_score,
+//               no_person_score);
+// }
+
 #include "tensorflow/lite/micro/examples/person_detection/detection_responder.h"
 
 #include "tensorflow/lite/micro/micro_log.h"
 
-// This dummy implementation writes person and no person scores to the error
-// console. Real applications will want to take some custom action instead, and
-// should implement their own versions of this function.
 void RespondToDetection(int8_t person_score, int8_t no_person_score) {
-  MicroPrintf("person score:%d no person score %d", person_score,
-              no_person_score);
+  MicroPrintf("person score: %d, no person score: %d\n",
+              person_score, no_person_score);
+
+  if (person_score > no_person_score) {
+    // MicroPrintf("RESULT: PERSON\n");
+  } else {
+    // MicroPrintf("RESULT: NO PERSON\n");
+  }
 }

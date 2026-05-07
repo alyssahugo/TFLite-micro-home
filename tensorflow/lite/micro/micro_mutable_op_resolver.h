@@ -730,7 +730,90 @@ class MicroMutableOpResolver : public MicroOpResolver {
 
   unsigned int GetRegistrationLength() { return registrations_len_; }
 
- private:
+    __attribute__((noinline))
+  const TFLMRegistration* FindOpDirect(BuiltinOperator op) const {
+    if (op == BuiltinOperator_CUSTOM) return nullptr;
+
+    for (unsigned int i = 0; i < registrations_len_; ++i) {
+      const TFLMRegistration& registration = registrations_[i];
+      if (registration.builtin_code == op) {
+        return &registration;
+      }
+    }
+    return nullptr;
+  }
+
+  __attribute__((noinline))
+  TfLiteBridgeBuiltinParseFunction GetOpDataParserDirect(
+      BuiltinOperator op) const {
+    for (unsigned int i = 0; i < num_buitin_ops_; ++i) {
+      if (builtin_codes_[i] == op) {
+        return builtin_parsers_[i];
+      }
+    }
+    return nullptr;
+  }
+
+//  private:
+//   TfLiteStatus AddBuiltin(tflite::BuiltinOperator op,
+//                           const TFLMRegistration& registration,
+//                           TfLiteBridgeBuiltinParseFunction parser) {
+//     if (op == BuiltinOperator_CUSTOM) {
+//       MicroPrintf("Invalid parameter BuiltinOperator_CUSTOM to the ");
+//       MicroPrintf("AddBuiltin function.");
+//       return kTfLiteError;
+//     }
+
+//     if (FindOp(op) != nullptr) {
+//       MicroPrintf("Calling AddBuiltin with the same op more than ");
+//       MicroPrintf("once is not supported (Op: #%d).", op);
+//       return kTfLiteError;
+//     }
+
+//     if (registrations_len_ >= tOpCount) {
+//       MicroPrintf("Couldn't register builtin op #%d, resolver size ", op);
+//       MicroPrintf("is too small (%d).", tOpCount);
+//       return kTfLiteError;
+//     }
+
+//     registrations_[registrations_len_] = registration;
+//     // Strictly speaking, the builtin_code is not necessary for TFLM but
+//     // filling it in regardless.
+//     registrations_[registrations_len_].builtin_code = op;
+//     registrations_len_++;
+
+//     builtin_codes_[num_buitin_ops_] = op;
+//     builtin_parsers_[num_buitin_ops_] = parser;
+//     num_buitin_ops_++;
+
+//     return kTfLiteOk;
+//   }
+
+//   TFLMRegistration registrations_[tOpCount];
+//   unsigned int registrations_len_ = 0;
+
+//   // Arrays (and counter) to store the builtin codes and their corresponding
+//   // parse functions as these are registered with the Op Resolver.
+//   BuiltinOperator builtin_codes_[tOpCount];
+//   TfLiteBridgeBuiltinParseFunction builtin_parsers_[tOpCount];
+//   unsigned int num_buitin_ops_ = 0;
+
+private:
+  // Direct builtin lookup used only inside AddBuiltin to avoid any
+  // virtual/indirect dispatch path.
+  const TFLMRegistration* FindOpDirectBuiltin(
+      tflite::BuiltinOperator op) const {
+    if (op == BuiltinOperator_CUSTOM) return nullptr;
+
+    for (unsigned int i = 0; i < registrations_len_; ++i) {
+      const TFLMRegistration& registration = registrations_[i];
+      if (registration.builtin_code == op) {
+        return &registration;
+      }
+    }
+    return nullptr;
+  }
+
   TfLiteStatus AddBuiltin(tflite::BuiltinOperator op,
                           const TFLMRegistration& registration,
                           TfLiteBridgeBuiltinParseFunction parser) {
@@ -740,7 +823,10 @@ class MicroMutableOpResolver : public MicroOpResolver {
       return kTfLiteError;
     }
 
-    if (FindOp(op) != nullptr) {
+    // IMPORTANT:
+    // Do not call FindOp(op) here. Do the duplicate check directly to avoid
+    // the problematic indirect-call path seen in disassembly.
+    if (FindOpDirectBuiltin(op) != nullptr) {
       MicroPrintf("Calling AddBuiltin with the same op more than ");
       MicroPrintf("once is not supported (Op: #%d).", op);
       return kTfLiteError;
@@ -753,8 +839,6 @@ class MicroMutableOpResolver : public MicroOpResolver {
     }
 
     registrations_[registrations_len_] = registration;
-    // Strictly speaking, the builtin_code is not necessary for TFLM but
-    // filling it in regardless.
     registrations_[registrations_len_].builtin_code = op;
     registrations_len_++;
 

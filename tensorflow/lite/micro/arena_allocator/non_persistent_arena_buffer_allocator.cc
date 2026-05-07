@@ -17,6 +17,7 @@ limitations under the License.
 #include "tensorflow/lite/micro/memory_helpers.h"
 #include "tensorflow/lite/micro/micro_log.h"
 
+
 namespace tflite {
 
 NonPersistentArenaBufferAllocator::NonPersistentArenaBufferAllocator(
@@ -76,6 +77,36 @@ TfLiteStatus NonPersistentArenaBufferAllocator::ResetTempAllocations() {
   }
   next_temp_ = head_temp_;
   return kTfLiteOk;
+}
+
+__attribute__((noinline))
+uint8_t* NonPersistentArenaBufferAllocator::AllocateResizableBufferDirect(
+    size_t size, size_t alignment) {
+  size_t local_size = size;
+  size_t local_alignment = alignment;
+
+
+  uint8_t* expected_resizable_buf = AlignPointerUp(buffer_head_, local_alignment);
+
+
+
+  if (resizable_buffer_allocated_) {
+
+    return nullptr;
+  }
+
+
+
+  if (ResizeBuffer(expected_resizable_buf, local_size, local_alignment) == kTfLiteOk) {
+    resizable_buffer_allocated_ = true;
+
+
+
+    return expected_resizable_buf;
+  }
+
+
+  return nullptr;
 }
 
 // Returns a buffer that is resizable viable ResizeBuffer().

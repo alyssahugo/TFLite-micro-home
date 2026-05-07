@@ -30,25 +30,88 @@ limitations under the License.
 // For example, see the Cortex M bare metal version in the
 // tensorflow/lite/micro/bluepill/debug_log.cc file.
 
-#include "tensorflow/lite/micro/debug_log.h"
+// #include "tensorflow/lite/micro/debug_log.h"
 
-#ifndef TF_LITE_STRIP_ERROR_STRINGS
+// #ifndef TF_LITE_STRIP_ERROR_STRINGS
+// #include <cstdio>
+// #endif
+
+// extern "C" void DebugLog(const char* format, va_list args) {
+// #ifndef TF_LITE_STRIP_ERROR_STRINGS
+//   // Reusing TF_LITE_STRIP_ERROR_STRINGS to disable DebugLog completely to get
+//   // maximum reduction in binary size. This is because we have DebugLog calls
+//   // via TF_LITE_CHECK that are not stubbed out by TF_LITE_REPORT_ERROR.
+//   vfprintf(stderr, format, args);
+// #endif
+// }
+
+// #ifndef TF_LITE_STRIP_ERROR_STRINGS
+// // Only called from MicroVsnprintf (micro_log.h)
+// extern "C" int DebugVsnprintf(char* buffer, size_t buf_size, const char* format,
+//                               va_list vlist) {
+//   return vsnprintf(buffer, buf_size, format, vlist);
+// }
+// #endif
+
+
+// #include <stdint.h>
+
+// extern "C" void DebugLog(const char* s) {
+//   volatile uint32_t* const uart_tx_fifo =
+//       (volatile uint32_t*)(0x40600000 + 0x04);
+//   volatile uint32_t* const uart_status =
+//       (volatile uint32_t*)(0x40600000 + 0x08);
+
+//   if (!s) return;
+
+//   while (*s) {
+//     if (*s == '\n') {
+//       while ((*uart_status) & 0x08) {}
+//       *uart_tx_fifo = '\r';
+//     }
+//     while ((*uart_status) & 0x08) {}
+//     *uart_tx_fifo = (uint32_t)(uint8_t)(*s++);
+//   }
+// }
+
+
+
+#include <cstdarg>
+#include <cstddef>
 #include <cstdio>
-#endif
+#include <stdint.h>
+
+namespace {
+inline void UartPutc(char c) {
+  volatile uint32_t* const uart_tx_fifo =
+      reinterpret_cast<volatile uint32_t*>(0x40600000 + 0x04);
+  volatile uint32_t* const uart_status =
+      reinterpret_cast<volatile uint32_t*>(0x40600000 + 0x08);
+
+  while ((*uart_status) & 0x08) {}
+  *uart_tx_fifo = static_cast<uint32_t>(static_cast<uint8_t>(c));
+}
+
+inline void UartWriteString(const char* s) {
+  if (!s) return;
+  while (*s) {
+    if (*s == '\n') UartPutc('\r');
+    UartPutc(*s++);
+  }
+}
+}  // namespace
 
 extern "C" void DebugLog(const char* format, va_list args) {
 #ifndef TF_LITE_STRIP_ERROR_STRINGS
-  // Reusing TF_LITE_STRIP_ERROR_STRINGS to disable DebugLog completely to get
-  // maximum reduction in binary size. This is because we have DebugLog calls
-  // via TF_LITE_CHECK that are not stubbed out by TF_LITE_REPORT_ERROR.
-  vfprintf(stderr, format, args);
+  char buffer[256];
+  vsnprintf(buffer, sizeof(buffer), format, args);
+  UartWriteString(buffer);
 #endif
 }
 
 #ifndef TF_LITE_STRIP_ERROR_STRINGS
-// Only called from MicroVsnprintf (micro_log.h)
-extern "C" int DebugVsnprintf(char* buffer, size_t buf_size, const char* format,
-                              va_list vlist) {
+extern "C" int DebugVsnprintf(char* buffer, size_t buf_size,
+                              const char* format, va_list vlist) {
   return vsnprintf(buffer, buf_size, format, vlist);
 }
 #endif

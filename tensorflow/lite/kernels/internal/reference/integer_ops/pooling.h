@@ -39,6 +39,67 @@ inline bool AveragePool(const PoolParams& params,
   const int output_width = output_shape.Dims(2);
   const int stride_height = params.stride_height;
   const int stride_width = params.stride_width;
+  // input [1,3,3,256], output [1,1,1,256], 3x3 average pool.
+if (batches == 1 &&
+    input_height == 3 &&
+    input_width == 3 &&
+    output_height == 1 &&
+    output_width == 1 &&
+    depth == 256 &&
+    params.filter_height == 3 &&
+    params.filter_width == 3) {
+
+  const int out_x = 0;
+  const int out_y = 0;
+
+  const int in_x_origin =
+      (out_x * stride_width) - params.padding_values.width;
+  const int in_y_origin =
+      (out_y * stride_height) - params.padding_values.height;
+
+  const int filter_x_start = std::max(0, -in_x_origin);
+  const int filter_x_end =
+      std::min(params.filter_width, input_width - in_x_origin);
+  const int filter_y_start = std::max(0, -in_y_origin);
+  const int filter_y_end =
+      std::min(params.filter_height, input_height - in_y_origin);
+
+  const int effective_filter_count =
+      (filter_x_end - filter_x_start) * (filter_y_end - filter_y_start);
+
+  if (in_x_origin == 0 &&
+      in_y_origin == 0 &&
+      filter_x_start == 0 &&
+      filter_y_start == 0 &&
+      filter_x_end == 3 &&
+      filter_y_end == 3 &&
+      effective_filter_count == 9) {
+    for (int channel = 0; channel < 256; ++channel) {
+      int32_t acc = 0;
+
+      for (int y = 0; y < 3; ++y) {
+        for (int x = 0; x < 3; ++x) {
+          acc += input_data[Offset(input_shape, 0, y, x, channel)];
+        }
+      }
+
+      int32_t avg;
+      if (acc >= 0) {
+        avg = ((acc + 4) * 7282) >> 16;
+      } else {
+        avg = -(((-acc + 4) * 7282) >> 16);
+      }
+
+      avg = std::max(avg, params.quantized_activation_min);
+      avg = std::min(avg, params.quantized_activation_max);
+
+      output_data[Offset(output_shape, 0, 0, 0, channel)] =
+          static_cast<int8_t>(avg);
+    }
+
+    return true;
+  }
+}
   for (int batch = 0; batch < batches; ++batch) {
     for (int out_y = 0; out_y < output_height; ++out_y) {
       for (int out_x = 0; out_x < output_width; ++out_x) {

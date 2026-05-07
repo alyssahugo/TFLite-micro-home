@@ -17,6 +17,46 @@ limitations under the License.
 
 #include "tensorflow/lite/micro/micro_log.h"
 
+
+
+#include <stdint.h>
+
+static inline void RawPutc(char c) {
+  volatile uint32_t* const uart_tx =
+      reinterpret_cast<volatile uint32_t*>(0x40600000u + 0x04u);
+  volatile uint32_t* const uart_status =
+      reinterpret_cast<volatile uint32_t*>(0x40600000u + 0x08u);
+
+  while ((*uart_status) & 0x08u) {
+  }
+
+  *uart_tx = static_cast<uint32_t>(static_cast<uint8_t>(c));
+}
+
+static inline void RawNewline() {
+  RawPutc('\r');
+  RawPutc('\n');
+}
+
+static inline void RawPutHexNibble(uint32_t v) {
+  v &= 0xFu;
+  RawPutc((v < 10u) ? static_cast<char>('0' + v)
+                    : static_cast<char>('A' + (v - 10u)));
+}
+
+static inline void RawPutHex32(uint32_t v) {
+  for (int shift = 28; shift >= 0; shift -= 4) {
+    RawPutHexNibble(v >> shift);
+  }
+}
+
+static inline void RawTagHex(char tag, uint32_t v) {
+  RawPutc(tag);
+  RawPutHex32(v);
+  RawPutc(' ');
+}
+
+
 namespace tflite {
 
 namespace {
@@ -159,21 +199,202 @@ GreedyMemoryPlanner::NextSimultaneouslyActiveBuffer(
   return result;
 }
 
+// void GreedyMemoryPlanner::CalculateOffsetsIfNeeded() {
+
+//   RawPutc('['); RawPutc('G'); RawPutc('C'); RawPutc('0'); RawPutc(']');
+//   RawTagHex('n', static_cast<uint32_t>(need_to_calculate_offsets_));
+//   RawTagHex('c', static_cast<uint32_t>(buffer_count_));
+//   RawNewline();
+
+//   if (!need_to_calculate_offsets_ || (buffer_count_ == 0)) {
+//     RawPutc('['); RawPutc('G'); RawPutc('C'); RawPutc('R'); RawPutc(']');
+//     RawNewline();
+//     return;
+//   }
+//   // if (!need_to_calculate_offsets_ || (buffer_count_ == 0)) {
+//   //   return;
+//   // }
+//   need_to_calculate_offsets_ = false;
+//   RawPutc('['); RawPutc('G'); RawPutc('C'); RawPutc('1'); RawPutc(']');
+//   RawNewline();
+//   // Start off by ordering the buffers in descending order of size.
+//   // This helps find a more compact layout. Intuitively, you can think
+//   // about putting the large buffers in place first, and then the
+//   // smaller buffers can fit in the gaps, rather than fragmenting the
+//   // gaps with small buffers at the beginning. Add offline planned offsets
+//   // first in the list, since they have a predetermined offset.
+//   int idx_from_tail = buffer_count_;
+//   int idx_from_head = 0;
+//   for (int i = 0; i < buffer_count_; ++i) {
+//     if (requirements_[i].offline_offset == kOnlinePlannedBuffer) {
+//       idx_from_tail--;
+//       buffer_sizes_sorted_[idx_from_tail] = requirements_[i].size;
+//       buffer_ids_sorted_[idx_from_tail] = i;
+//       buffer_offsets_[i] = -1;
+//     } else {
+//       buffer_sizes_sorted_[idx_from_head] = requirements_[i].size;
+//       buffer_ids_sorted_[idx_from_head] = i;
+//       buffer_offsets_[i] = requirements_[i].offline_offset;
+//       idx_from_head++;
+//     }
+//   }
+
+//   // This sorting algorithm is naive, and may end up taking a very long time
+//   // with hundreds of buffers. Do not sort the offline planned offsets.
+//   ReverseSortInPlace(&buffer_sizes_sorted_[idx_from_head],
+//                      &buffer_ids_sorted_[idx_from_head],
+//                      buffer_count_ - idx_from_head);
+
+//   // Initialize the first entry to the first buffer in
+//   // buffer_ids_sorted_.
+//   //   - If there are no offline planned offsets, the largest buffer will be
+//   //     first, and the buffers will be handled in size order.
+//   //   - If offline offsets are present, these will be handled first in order
+//   //     for the greedy algorithm to utilized gaps in the offline plan.
+//   first_entry_index_ = 0;
+//   next_free_entry_ = 1;
+//   ListEntry* first_entry = &buffers_sorted_by_offset_[first_entry_index_];
+//   first_entry->next_entry_index = -1;  // to mark the entry as end of list
+//   int buffer_id = buffer_ids_sorted_[0];
+//   first_entry->requirements_index = buffer_id;
+//   if (requirements_[buffer_id].offline_offset == kOnlinePlannedBuffer) {
+//     buffer_offsets_[buffer_id] = 0;
+//   }
+//   first_entry->offset = buffer_offsets_[buffer_id];
+
+//   // Work through the rest of the buffers to find a good gap to place each one.
+//   for (int i = 1; i < buffer_count_; ++i) {
+//     // The id is the order the buffer was originally added by the client.
+//     buffer_id = buffer_ids_sorted_[i];
+//     // Look at what size and time range the buffer needs to be active.
+//     BufferRequirements* wanted_requirements = &requirements_[buffer_id];
+//     const int wanted_size = wanted_requirements->size;
+//     const int wanted_first_time_used = wanted_requirements->first_time_used;
+//     const int wanted_last_time_used = wanted_requirements->last_time_used;
+
+//     // Find the first buffer that's active in our time range. All placed
+//     // buffers are stored in the order of their starting position in the arena
+//     // so that it's easy to find the next buffer in memory, and so the gap.
+//     // The candidate_entry variable holds the buffer that we're considering
+//     // placing the current buffer after.
+
+//     int candidate_offset = 0;
+//     // Loop through the offset-ordered list of buffers, looking for gaps.
+//     if (wanted_requirements->offline_offset == kOnlinePlannedBuffer) {
+//       ListEntry* prior_entry = nullptr;
+//       while (true) {
+//         // Find out what the next active buffer is.
+//         ListEntry* next_entry = NextSimultaneouslyActiveBuffer(
+//             prior_entry, wanted_first_time_used, wanted_last_time_used);
+
+//         if (prior_entry) {
+//           BufferRequirements* candidate_requirements =
+//               &requirements_[prior_entry->requirements_index];
+//           const int prior_entry_offset =
+//               prior_entry->offset + candidate_requirements->size;
+//           if (prior_entry_offset > candidate_offset) {
+//             candidate_offset = prior_entry_offset;
+//           }
+//         }
+//         if (next_entry == nullptr) {
+//           // We're at the end of the list, so we can always append the buffer
+//           // here.
+//           break;
+//         }
+//         // Find out how much space there is between us and the next buffer.
+//         const int gap = next_entry->offset - candidate_offset;
+//         if (gap >= wanted_size) {
+//           // This entry has a big enough gap between it and the next, so
+//           // use it!
+//           break;
+//         }
+//         // The gap wasn't big enough, so move on to another candidate.
+//         prior_entry = next_entry;
+//       }
+//     } else {
+//       // Offline planned offset are to be considered constant
+//       candidate_offset = wanted_requirements->offline_offset;
+//     }
+//     // At this point, we've either found a gap (possibly at the end of the
+//     // list) and want to place the buffer there, or there are no other active
+//     // buffers in this time range and so we can put it at offset zero.
+//     // Record the buffer's offset in our plan.
+//     buffer_offsets_[buffer_id] = candidate_offset;
+//     // Add the newly-placed buffer to our offset-ordered list, so that
+//     // subsequent passes can fit in their buffers around it.
+//     ListEntry* new_entry = &buffers_sorted_by_offset_[next_free_entry_];
+//     new_entry->offset = candidate_offset;
+//     new_entry->requirements_index = buffer_id;
+//     const int new_entry_index = next_free_entry_;
+//     ++next_free_entry_;
+
+//     if (first_entry->offset > candidate_offset) {
+//       // The new entry offset is smaller than the first entry offset =>
+//       // replace the first entry
+//       first_entry = new_entry;
+//       first_entry->next_entry_index = first_entry_index_;
+//       first_entry_index_ = new_entry_index;
+//     } else {
+//       ListEntry* current_entry = first_entry;
+//       // Make sure that we insert the buffer at the correct place in the
+//       // buffer-offset-ordered list
+//       while (true) {
+//         const int next_entry_index = current_entry->next_entry_index;
+//         if (next_entry_index == -1) {
+//           // We're at the end of the list, so just add the new entry here.
+//           current_entry->next_entry_index = new_entry_index;
+//           new_entry->next_entry_index = -1;
+//           break;
+//         }
+//         // not at the end of the list -> take a look at next entry
+//         ListEntry* next_entry = &buffers_sorted_by_offset_[next_entry_index];
+//         if (next_entry->offset > candidate_offset) {
+//           // We're at the right spot to do an insertion and retain the sorting
+//           // order, so place the new entry here.
+//           new_entry->next_entry_index = current_entry->next_entry_index;
+//           current_entry->next_entry_index = new_entry_index;
+//           break;
+//         }
+//         current_entry = next_entry;
+//       }
+//     }
+//   }
+// }
+
 void GreedyMemoryPlanner::CalculateOffsetsIfNeeded() {
+  // RawPutc('['); RawPutc('G'); RawPutc('C'); RawPutc('0'); RawPutc(']');
+  // RawTagHex('n', static_cast<uint32_t>(need_to_calculate_offsets_));
+  // RawTagHex('c', static_cast<uint32_t>(buffer_count_));
+  // RawNewline();
+
   if (!need_to_calculate_offsets_ || (buffer_count_ == 0)) {
+    RawPutc('['); RawPutc('G'); RawPutc('C'); RawPutc('R'); RawPutc(']');
+    RawNewline();
     return;
   }
+
   need_to_calculate_offsets_ = false;
 
-  // Start off by ordering the buffers in descending order of size.
-  // This helps find a more compact layout. Intuitively, you can think
-  // about putting the large buffers in place first, and then the
-  // smaller buffers can fit in the gaps, rather than fragmenting the
-  // gaps with small buffers at the beginning. Add offline planned offsets
-  // first in the list, since they have a predetermined offset.
+  // RawPutc('['); RawPutc('G'); RawPutc('C'); RawPutc('1'); RawPutc(']');
+  // RawNewline();
+
   int idx_from_tail = buffer_count_;
   int idx_from_head = 0;
+
+  // RawPutc('['); RawPutc('G'); RawPutc('C'); RawPutc('2'); RawPutc(']');
+  // RawTagHex('t', static_cast<uint32_t>(idx_from_tail));
+  // RawTagHex('h', static_cast<uint32_t>(idx_from_head));
+  // RawNewline();
+
   for (int i = 0; i < buffer_count_; ++i) {
+    // RawPutc('['); RawPutc('G'); RawPutc('C'); RawPutc('A'); RawPutc(']');
+    // RawTagHex('i', static_cast<uint32_t>(i));
+    // RawTagHex('s', static_cast<uint32_t>(requirements_[i].size));
+    // RawTagHex('f', static_cast<uint32_t>(requirements_[i].first_time_used));
+    // RawTagHex('l', static_cast<uint32_t>(requirements_[i].last_time_used));
+    // RawTagHex('o', static_cast<uint32_t>(requirements_[i].offline_offset));
+    // RawNewline();
+
     if (requirements_[i].offline_offset == kOnlinePlannedBuffer) {
       idx_from_tail--;
       buffer_sizes_sorted_[idx_from_tail] = requirements_[i].size;
@@ -187,127 +408,239 @@ void GreedyMemoryPlanner::CalculateOffsetsIfNeeded() {
     }
   }
 
-  // This sorting algorithm is naive, and may end up taking a very long time
-  // with hundreds of buffers. Do not sort the offline planned offsets.
+  // RawPutc('['); RawPutc('G'); RawPutc('C'); RawPutc('3'); RawPutc(']');
+  // RawTagHex('t', static_cast<uint32_t>(idx_from_tail));
+  // RawTagHex('h', static_cast<uint32_t>(idx_from_head));
+  // RawTagHex('n', static_cast<uint32_t>(buffer_count_ - idx_from_head));
+  // RawNewline();
+
   ReverseSortInPlace(&buffer_sizes_sorted_[idx_from_head],
                      &buffer_ids_sorted_[idx_from_head],
                      buffer_count_ - idx_from_head);
 
-  // Initialize the first entry to the first buffer in
-  // buffer_ids_sorted_.
-  //   - If there are no offline planned offsets, the largest buffer will be
-  //     first, and the buffers will be handled in size order.
-  //   - If offline offsets are present, these will be handled first in order
-  //     for the greedy algorithm to utilized gaps in the offline plan.
+  RawPutc('['); RawPutc('G'); RawPutc('C'); RawPutc('4'); RawPutc(']');
+  RawNewline();
+
   first_entry_index_ = 0;
   next_free_entry_ = 1;
+
   ListEntry* first_entry = &buffers_sorted_by_offset_[first_entry_index_];
-  first_entry->next_entry_index = -1;  // to mark the entry as end of list
+  first_entry->next_entry_index = -1;
+
   int buffer_id = buffer_ids_sorted_[0];
+
+  // RawPutc('['); RawPutc('G'); RawPutc('C'); RawPutc('5'); RawPutc(']');
+  // RawTagHex('b', static_cast<uint32_t>(buffer_id));
+  // RawTagHex('f', static_cast<uint32_t>(first_entry_index_));
+  // RawTagHex('n', static_cast<uint32_t>(next_free_entry_));
+  // RawNewline();
+
   first_entry->requirements_index = buffer_id;
+
   if (requirements_[buffer_id].offline_offset == kOnlinePlannedBuffer) {
     buffer_offsets_[buffer_id] = 0;
   }
+
   first_entry->offset = buffer_offsets_[buffer_id];
 
-  // Work through the rest of the buffers to find a good gap to place each one.
+  RawPutc('['); RawPutc('G'); RawPutc('C'); RawPutc('6'); RawPutc(']');
+  RawTagHex('o', static_cast<uint32_t>(first_entry->offset));
+  RawTagHex('r', static_cast<uint32_t>(first_entry->requirements_index));
+  RawTagHex('x', static_cast<uint32_t>(first_entry->next_entry_index));
+  RawNewline();
+
   for (int i = 1; i < buffer_count_; ++i) {
-    // The id is the order the buffer was originally added by the client.
     buffer_id = buffer_ids_sorted_[i];
-    // Look at what size and time range the buffer needs to be active.
+
     BufferRequirements* wanted_requirements = &requirements_[buffer_id];
     const int wanted_size = wanted_requirements->size;
     const int wanted_first_time_used = wanted_requirements->first_time_used;
     const int wanted_last_time_used = wanted_requirements->last_time_used;
 
-    // Find the first buffer that's active in our time range. All placed
-    // buffers are stored in the order of their starting position in the arena
-    // so that it's easy to find the next buffer in memory, and so the gap.
-    // The candidate_entry variable holds the buffer that we're considering
-    // placing the current buffer after.
+    RawPutc('['); RawPutc('G'); RawPutc('C'); RawPutc('B'); RawPutc(']');
+    RawTagHex('i', static_cast<uint32_t>(i));
+    RawTagHex('b', static_cast<uint32_t>(buffer_id));
+    RawTagHex('s', static_cast<uint32_t>(wanted_size));
+    RawTagHex('f', static_cast<uint32_t>(wanted_first_time_used));
+    RawTagHex('l', static_cast<uint32_t>(wanted_last_time_used));
+    RawTagHex('o', static_cast<uint32_t>(wanted_requirements->offline_offset));
+    RawNewline();
 
     int candidate_offset = 0;
-    // Loop through the offset-ordered list of buffers, looking for gaps.
+
     if (wanted_requirements->offline_offset == kOnlinePlannedBuffer) {
       ListEntry* prior_entry = nullptr;
+
+      int guard_a = 0;
       while (true) {
-        // Find out what the next active buffer is.
+        if (++guard_a > buffer_count_ + 2) {
+          RawPutc('['); RawPutc('G'); RawPutc('C'); RawPutc('X'); RawPutc(']');
+          RawTagHex('i', static_cast<uint32_t>(i));
+          RawTagHex('b', static_cast<uint32_t>(buffer_id));
+          RawTagHex('g', static_cast<uint32_t>(guard_a));
+          RawTagHex('c', static_cast<uint32_t>(candidate_offset));
+          RawNewline();
+          break;
+        }
+
+        RawPutc('['); RawPutc('G'); RawPutc('C'); RawPutc('C'); RawPutc(']');
+        RawTagHex('i', static_cast<uint32_t>(i));
+        RawTagHex('g', static_cast<uint32_t>(guard_a));
+        RawTagHex('p', static_cast<uint32_t>(
+                           reinterpret_cast<uintptr_t>(prior_entry)));
+        RawTagHex('c', static_cast<uint32_t>(candidate_offset));
+        RawNewline();
+
         ListEntry* next_entry = NextSimultaneouslyActiveBuffer(
             prior_entry, wanted_first_time_used, wanted_last_time_used);
+
+        RawPutc('['); RawPutc('G'); RawPutc('C'); RawPutc('D'); RawPutc(']');
+        RawTagHex('n', static_cast<uint32_t>(
+                           reinterpret_cast<uintptr_t>(next_entry)));
+        if (next_entry != nullptr) {
+          RawTagHex('o', static_cast<uint32_t>(next_entry->offset));
+          RawTagHex('r', static_cast<uint32_t>(next_entry->requirements_index));
+          RawTagHex('x', static_cast<uint32_t>(next_entry->next_entry_index));
+        }
+        RawNewline();
 
         if (prior_entry) {
           BufferRequirements* candidate_requirements =
               &requirements_[prior_entry->requirements_index];
+
           const int prior_entry_offset =
               prior_entry->offset + candidate_requirements->size;
+
           if (prior_entry_offset > candidate_offset) {
             candidate_offset = prior_entry_offset;
           }
         }
+
         if (next_entry == nullptr) {
-          // We're at the end of the list, so we can always append the buffer
-          // here.
           break;
         }
-        // Find out how much space there is between us and the next buffer.
+
         const int gap = next_entry->offset - candidate_offset;
+
+        RawPutc('['); RawPutc('G'); RawPutc('C'); RawPutc('E'); RawPutc(']');
+        RawTagHex('g', static_cast<uint32_t>(gap));
+        RawTagHex('w', static_cast<uint32_t>(wanted_size));
+        RawTagHex('c', static_cast<uint32_t>(candidate_offset));
+        RawNewline();
+
         if (gap >= wanted_size) {
-          // This entry has a big enough gap between it and the next, so
-          // use it!
           break;
         }
-        // The gap wasn't big enough, so move on to another candidate.
+
         prior_entry = next_entry;
       }
     } else {
-      // Offline planned offset are to be considered constant
       candidate_offset = wanted_requirements->offline_offset;
     }
-    // At this point, we've either found a gap (possibly at the end of the
-    // list) and want to place the buffer there, or there are no other active
-    // buffers in this time range and so we can put it at offset zero.
-    // Record the buffer's offset in our plan.
+
+    RawPutc('['); RawPutc('G'); RawPutc('C'); RawPutc('7'); RawPutc(']');
+    RawTagHex('i', static_cast<uint32_t>(i));
+    RawTagHex('b', static_cast<uint32_t>(buffer_id));
+    RawTagHex('c', static_cast<uint32_t>(candidate_offset));
+    RawNewline();
+
     buffer_offsets_[buffer_id] = candidate_offset;
-    // Add the newly-placed buffer to our offset-ordered list, so that
-    // subsequent passes can fit in their buffers around it.
+
     ListEntry* new_entry = &buffers_sorted_by_offset_[next_free_entry_];
     new_entry->offset = candidate_offset;
     new_entry->requirements_index = buffer_id;
+
     const int new_entry_index = next_free_entry_;
     ++next_free_entry_;
 
+    RawPutc('['); RawPutc('G'); RawPutc('C'); RawPutc('8'); RawPutc(']');
+    RawTagHex('i', static_cast<uint32_t>(i));
+    RawTagHex('e', static_cast<uint32_t>(new_entry_index));
+    RawTagHex('n', static_cast<uint32_t>(next_free_entry_));
+    RawTagHex('o', static_cast<uint32_t>(new_entry->offset));
+    RawNewline();
+
     if (first_entry->offset > candidate_offset) {
-      // The new entry offset is smaller than the first entry offset =>
-      // replace the first entry
+      new_entry->next_entry_index = first_entry_index_;
       first_entry = new_entry;
-      first_entry->next_entry_index = first_entry_index_;
       first_entry_index_ = new_entry_index;
+
+      RawPutc('['); RawPutc('G'); RawPutc('C'); RawPutc('9'); RawPutc(']');
+      RawTagHex('f', static_cast<uint32_t>(first_entry_index_));
+      RawTagHex('x', static_cast<uint32_t>(new_entry->next_entry_index));
+      RawNewline();
     } else {
       ListEntry* current_entry = first_entry;
-      // Make sure that we insert the buffer at the correct place in the
-      // buffer-offset-ordered list
+
+      int guard_b = 0;
       while (true) {
-        const int next_entry_index = current_entry->next_entry_index;
-        if (next_entry_index == -1) {
-          // We're at the end of the list, so just add the new entry here.
-          current_entry->next_entry_index = new_entry_index;
+        if (++guard_b > buffer_count_ + 2) {
+          // RawPutc('['); RawPutc('G'); RawPutc('C'); RawPutc('Y'); RawPutc(']');
+          // RawTagHex('i', static_cast<uint32_t>(i));
+          // RawTagHex('b', static_cast<uint32_t>(buffer_id));
+          // RawTagHex('g', static_cast<uint32_t>(guard_b));
+          // RawTagHex('c', static_cast<uint32_t>(
+          //                    reinterpret_cast<uintptr_t>(current_entry)));
+          // RawNewline();
+
+          // Force-terminate this new entry so the list cannot be left dangling.
           new_entry->next_entry_index = -1;
           break;
         }
-        // not at the end of the list -> take a look at next entry
-        ListEntry* next_entry = &buffers_sorted_by_offset_[next_entry_index];
-        if (next_entry->offset > candidate_offset) {
-          // We're at the right spot to do an insertion and retain the sorting
-          // order, so place the new entry here.
-          new_entry->next_entry_index = current_entry->next_entry_index;
+
+        const int next_entry_index = current_entry->next_entry_index;
+
+        // RawPutc('['); RawPutc('G'); RawPutc('C'); RawPutc('F'); RawPutc(']');
+        // RawTagHex('i', static_cast<uint32_t>(i));
+        // RawTagHex('g', static_cast<uint32_t>(guard_b));
+        // RawTagHex('c', static_cast<uint32_t>(
+        //                    reinterpret_cast<uintptr_t>(current_entry)));
+        // RawTagHex('x', static_cast<uint32_t>(next_entry_index));
+        // RawNewline();
+
+        if (next_entry_index == -1) {
           current_entry->next_entry_index = new_entry_index;
+          new_entry->next_entry_index = -1;
+
+          RawPutc('['); RawPutc('G'); RawPutc('C'); RawPutc('G'); RawPutc(']');
+          RawTagHex('e', static_cast<uint32_t>(new_entry_index));
+          RawNewline();
+
           break;
         }
+
+        ListEntry* next_entry = &buffers_sorted_by_offset_[next_entry_index];
+
+        // RawPutc('['); RawPutc('G'); RawPutc('C'); RawPutc('H'); RawPutc(']');
+        // RawTagHex('n', static_cast<uint32_t>(
+        //                    reinterpret_cast<uintptr_t>(next_entry)));
+        // RawTagHex('o', static_cast<uint32_t>(next_entry->offset));
+        // RawTagHex('x', static_cast<uint32_t>(next_entry->next_entry_index));
+        // RawNewline();
+
+        if (next_entry->offset > candidate_offset) {
+          new_entry->next_entry_index = current_entry->next_entry_index;
+          current_entry->next_entry_index = new_entry_index;
+
+          RawPutc('['); RawPutc('G'); RawPutc('C'); RawPutc('I'); RawPutc(']');
+          RawTagHex('e', static_cast<uint32_t>(new_entry_index));
+          RawTagHex('x', static_cast<uint32_t>(new_entry->next_entry_index));
+          RawNewline();
+
+          break;
+        }
+
         current_entry = next_entry;
       }
     }
   }
+
+  RawPutc('['); RawPutc('G'); RawPutc('C'); RawPutc('Z'); RawPutc(']');
+  RawTagHex('f', static_cast<uint32_t>(first_entry_index_));
+  RawTagHex('n', static_cast<uint32_t>(next_free_entry_));
+  RawNewline();
 }
+
 
 size_t GreedyMemoryPlanner::GetMaximumMemorySize() {
   CalculateOffsetsIfNeeded();
@@ -328,6 +661,96 @@ size_t GreedyMemoryPlanner::GetMaximumMemorySize() {
     }
     entry = &buffers_sorted_by_offset_[entry->next_entry_index];
   }
+  return max_size;
+}
+
+// __attribute__((noinline))
+// size_t GreedyMemoryPlanner::GetMaximumMemorySizeDirect() {
+//   CalculateOffsetsIfNeeded();
+
+//   if (buffer_count_ == 0) {
+//     return 0;
+//   }
+
+//   ListEntry* entry = &buffers_sorted_by_offset_[first_entry_index_];
+//   size_t max_size = 0;
+
+//   while (entry) {
+//     BufferRequirements* requirements =
+//         &requirements_[entry->requirements_index];
+
+//     const size_t current_size = entry->offset + requirements->size;
+
+//     if (current_size > max_size) {
+//       max_size = current_size;
+//     }
+
+//     if (entry->next_entry_index == -1) {
+//       break;
+//     }
+
+//     entry = &buffers_sorted_by_offset_[entry->next_entry_index];
+//   }
+
+//   return max_size;
+// }
+
+__attribute__((noinline))
+size_t GreedyMemoryPlanner::GetMaximumMemorySizeDirect() {
+  RawPutc('['); RawPutc('G'); RawPutc('M'); RawPutc('0'); RawPutc(']');
+  RawPutc('\r'); RawPutc('\n');
+
+  CalculateOffsetsIfNeeded();
+
+  RawPutc('['); RawPutc('G'); RawPutc('M'); RawPutc('1'); RawPutc(']');
+  RawTagHex('c', static_cast<uint32_t>(buffer_count_));
+  RawTagHex('f', static_cast<uint32_t>(first_entry_index_));
+  RawPutc('\r'); RawPutc('\n');
+
+  if (buffer_count_ == 0) {
+    return 0;
+  }
+
+  ListEntry* entry = &buffers_sorted_by_offset_[first_entry_index_];
+  size_t max_size = 0;
+
+  int guard = 0;
+  while (entry) {
+    // RawPutc('['); RawPutc('G'); RawPutc('M'); RawPutc('2'); RawPutc(']');
+    // RawTagHex('g', static_cast<uint32_t>(guard));
+    // RawTagHex('e', static_cast<uint32_t>(reinterpret_cast<uintptr_t>(entry)));
+    // RawTagHex('r', static_cast<uint32_t>(entry->requirements_index));
+    // RawTagHex('o', static_cast<uint32_t>(entry->offset));
+    // RawTagHex('n', static_cast<uint32_t>(entry->next_entry_index));
+    // RawPutc('\r'); RawPutc('\n');
+
+    if (guard > buffer_count_) {
+      RawPutc('['); RawPutc('G'); RawPutc('M'); RawPutc('X'); RawPutc(']');
+      RawPutc('\r'); RawPutc('\n');
+      break;
+    }
+
+    BufferRequirements* requirements =
+        &requirements_[entry->requirements_index];
+
+    const size_t current_size = entry->offset + requirements->size;
+
+    if (current_size > max_size) {
+      max_size = current_size;
+    }
+
+    if (entry->next_entry_index == -1) {
+      break;
+    }
+
+    entry = &buffers_sorted_by_offset_[entry->next_entry_index];
+    ++guard;
+  }
+
+  RawPutc('['); RawPutc('G'); RawPutc('M'); RawPutc('3'); RawPutc(']');
+  RawTagHex('u', static_cast<uint32_t>(max_size));
+  RawPutc('\r'); RawPutc('\n');
+
   return max_size;
 }
 

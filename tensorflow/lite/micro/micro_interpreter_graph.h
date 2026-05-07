@@ -84,6 +84,7 @@ class MicroInterpreterGraph : public MicroGraph {
   // Hook to pass in subgraph allocations tracked within the interpreter,
   // allowing MicroInterpreterGraph to init / prepare / invoke subgraphs in the
   // model.
+  __attribute__((noinline))
   void SetSubgraphAllocations(SubgraphAllocations* subgraph_allocations);
 
   // Get the current subgraph index. Within an on operator, this is guaranteed

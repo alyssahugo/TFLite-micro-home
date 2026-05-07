@@ -48,12 +48,22 @@ float FlexbufferWrapper::ElementAsFloat(size_t i) const {
 }
 
 // TODO(b/192589496): Ops must always be there. Remove this function when fixed
+// uint32_t NumSubgraphOperators(const SubGraph* subgraph) {
+//   if (subgraph->operators() != nullptr) {
+//     return subgraph->operators()->size();
+//   } else {
+//     return 0;
+//   }
+// }
+
 uint32_t NumSubgraphOperators(const SubGraph* subgraph) {
-  if (subgraph->operators() != nullptr) {
-    return subgraph->operators()->size();
-  } else {
-    return 0;
+  const auto* operators = subgraph->operators();
+
+  if (operators != nullptr) {
+    return operators->size();
   }
+
+  return 0;
 }
 // TODO(b/192589496): Ops must always be there. Remove this function when fixed
 uint32_t NumSubgraphOperators(const Model* model, int subgraph_idx) {

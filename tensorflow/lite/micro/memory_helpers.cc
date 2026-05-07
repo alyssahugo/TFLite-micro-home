@@ -26,21 +26,83 @@ limitations under the License.
 
 namespace tflite {
 
+// uint8_t* AlignPointerUp(uint8_t* data, size_t alignment) {
+//   std::uintptr_t data_as_uintptr_t = reinterpret_cast<std::uintptr_t>(data);
+//   uint8_t* aligned_result = reinterpret_cast<uint8_t*>(
+//       ((data_as_uintptr_t + (alignment - 1)) / alignment) * alignment);
+//   return aligned_result;
+// }
+
 uint8_t* AlignPointerUp(uint8_t* data, size_t alignment) {
-  std::uintptr_t data_as_uintptr_t = reinterpret_cast<std::uintptr_t>(data);
-  uint8_t* aligned_result = reinterpret_cast<uint8_t*>(
-      ((data_as_uintptr_t + (alignment - 1)) / alignment) * alignment);
-  return aligned_result;
+  if (data == nullptr) {
+    return nullptr;
+  }
+  if (alignment == 0) {
+    return nullptr;
+  }
+
+  std::uintptr_t p = reinterpret_cast<std::uintptr_t>(data);
+
+  // Division-free path for power-of-two alignments.
+  if ((alignment & (alignment - 1)) == 0) {
+    std::uintptr_t aligned =
+        (p + (static_cast<std::uintptr_t>(alignment) - 1u)) &
+        ~(static_cast<std::uintptr_t>(alignment) - 1u);
+    return reinterpret_cast<uint8_t*>(aligned);
+  }
+
+  // Fallback for non-power-of-two alignments.
+  std::uintptr_t aligned =
+      ((p + (alignment - 1)) / alignment) * alignment;
+  return reinterpret_cast<uint8_t*>(aligned);
 }
+
+
+
+// uint8_t* AlignPointerDown(uint8_t* data, size_t alignment) {
+//   std::uintptr_t data_as_uintptr_t = reinterpret_cast<std::uintptr_t>(data);
+//   uint8_t* aligned_result =
+//       reinterpret_cast<uint8_t*>((data_as_uintptr_t / alignment) * alignment);
+//   return aligned_result;
+// }
 
 uint8_t* AlignPointerDown(uint8_t* data, size_t alignment) {
-  std::uintptr_t data_as_uintptr_t = reinterpret_cast<std::uintptr_t>(data);
-  uint8_t* aligned_result =
-      reinterpret_cast<uint8_t*>((data_as_uintptr_t / alignment) * alignment);
-  return aligned_result;
+  if (data == nullptr) {
+    return nullptr;
+  }
+  if (alignment == 0) {
+    return nullptr;
+  }
+
+  std::uintptr_t p = reinterpret_cast<std::uintptr_t>(data);
+
+  // Division-free path for power-of-two alignments.
+  if ((alignment & (alignment - 1)) == 0) {
+    std::uintptr_t aligned =
+        p & ~(static_cast<std::uintptr_t>(alignment) - 1u);
+    return reinterpret_cast<uint8_t*>(aligned);
+  }
+
+  // Fallback for non-power-of-two alignments.
+  std::uintptr_t aligned = (p / alignment) * alignment;
+  return reinterpret_cast<uint8_t*>(aligned);
 }
 
+
+// size_t AlignSizeUp(size_t size, size_t alignment) {
+//   size_t aligned_size = (((size + (alignment - 1)) / alignment) * alignment);
+//   return aligned_size;
+// }
+
 size_t AlignSizeUp(size_t size, size_t alignment) {
+  if (alignment == 0) {
+    return 0;
+  }
+
+  if ((alignment & (alignment - 1)) == 0) {
+    return (size + (alignment - 1)) & ~(alignment - 1);
+  }
+
   size_t aligned_size = (((size + (alignment - 1)) / alignment) * alignment);
   return aligned_size;
 }

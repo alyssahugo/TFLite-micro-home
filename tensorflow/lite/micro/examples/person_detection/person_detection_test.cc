@@ -32,15 +32,23 @@ constexpr int tensor_arena_size = 136 * 1024;
 #endif  // defined(XTENSA) && defined(VISION_P6)
 uint8_t tensor_arena[tensor_arena_size];
 
+static inline void RawPutc(char c) {
+  volatile uint32_t* const uart_tx =
+      reinterpret_cast<volatile uint32_t*>(0x40600000u + 0x04u);
+  *uart_tx = static_cast<uint32_t>(static_cast<uint8_t>(c));
+}
+
+
 TEST(PersonDetectionTest, TestInvoke) {
   // Map the model into a usable data structure. This doesn't involve any
   // copying or parsing, it's a very lightweight operation.
   const tflite::Model* model = ::tflite::GetModel(g_person_detect_model_data);
   if (model->version() != TFLITE_SCHEMA_VERSION) {
-    MicroPrintf(
-        "Model provided is schema version %d not equal "
-        "to supported version %d.\n",
-        model->version(), TFLITE_SCHEMA_VERSION);
+    // MicroPrintf(
+    //     "Model provided is schema version %d not equal "
+    //     "to supported version %d.\n",
+    //     model->version(), TFLITE_SCHEMA_VERSION);
+    RawPutc('A');
   }
 
   // Pull in only the operation implementations we need.
@@ -49,20 +57,28 @@ TEST(PersonDetectionTest, TestInvoke) {
   // incur some penalty in code space for op implementations that are not
   // needed by this graph.
   tflite::MicroMutableOpResolver<5> micro_op_resolver;
+  RawPutc('B');
   micro_op_resolver.AddAveragePool2D(tflite::Register_AVERAGE_POOL_2D_INT8());
+  RawPutc('C');
   micro_op_resolver.AddConv2D(tflite::Register_CONV_2D_INT8());
+  RawPutc('D');
   micro_op_resolver.AddDepthwiseConv2D(
       tflite::Register_DEPTHWISE_CONV_2D_INT8());
+  RawPutc('E');
   micro_op_resolver.AddReshape();
+  RawPutc('F');
   micro_op_resolver.AddSoftmax(tflite::Register_SOFTMAX_INT8());
+  RawPutc('G');
 
   // Build an interpreter to run the model with.
   tflite::MicroInterpreter interpreter(model, micro_op_resolver, tensor_arena,
                                        tensor_arena_size);
+                                       RawPutc('H');
   interpreter.AllocateTensors();
-
+  RawPutc('I');
   // Get information about the memory area to use for the model's input.
   TfLiteTensor* input = interpreter.input(0);
+  RawPutc('J');
 
   // Make sure the input has the properties we expect.
   EXPECT_NE(input, nullptr);
@@ -76,17 +92,21 @@ TEST(PersonDetectionTest, TestInvoke) {
   // Copy an image with a person into the memory area used for the input.
   TFLITE_DCHECK_EQ(input->bytes, static_cast<size_t>(g_person_image_data_size));
   memcpy(input->data.int8, g_person_image_data, input->bytes);
+  RawPutc('L');
 
   // Run the model on this input and make sure it succeeds.
   TfLiteStatus invoke_status = interpreter.Invoke();
   if (invoke_status != kTfLiteOk) {
-    MicroPrintf("Invoke failed\n");
+    // MicroPrintf("Invoke failed\n");
+    RawPutc('M');
   }
   EXPECT_EQ(kTfLiteOk, invoke_status);
+  RawPutc('N');
 
   // Get the output from the model, and make sure it's the expected size and
   // type.
   TfLiteTensor* output = interpreter.output(0);
+  RawPutc('O');
   EXPECT_EQ(2, output->dims->size);
   EXPECT_EQ(1, output->dims->data[0]);
   EXPECT_EQ(kCategoryCount, output->dims->data[1]);
@@ -95,8 +115,9 @@ TEST(PersonDetectionTest, TestInvoke) {
   // Make sure that the expected "Person" score is higher than the other class.
   int8_t person_score = output->data.int8[kPersonIndex];
   int8_t no_person_score = output->data.int8[kNotAPersonIndex];
-  MicroPrintf("person data.  person score: %d, no person score: %d\n",
-              person_score, no_person_score);
+  RawPutc('P');
+  // MicroPrintf("person data.  person score: %d, no person score: %d\n",
+  //             person_score, no_person_score);
   EXPECT_GT(person_score, no_person_score);
 
   memcpy(input->data.int8, g_no_person_image_data, input->bytes);
@@ -104,7 +125,7 @@ TEST(PersonDetectionTest, TestInvoke) {
   // Run the model on this "No Person" input.
   invoke_status = interpreter.Invoke();
   if (invoke_status != kTfLiteOk) {
-    MicroPrintf("Invoke failed\n");
+    // MicroPrintf("Invoke failed\n");
   }
   EXPECT_EQ(kTfLiteOk, invoke_status);
 
@@ -119,11 +140,11 @@ TEST(PersonDetectionTest, TestInvoke) {
   // Make sure that the expected "No Person" score is higher.
   person_score = output->data.int8[kPersonIndex];
   no_person_score = output->data.int8[kNotAPersonIndex];
-  MicroPrintf("no person data.  person score: %d, no person score: %d\n",
-              person_score, no_person_score);
+  // MicroPrintf("no person data.  person score: %d, no person score: %d\n",
+  //             person_score, no_person_score);
   EXPECT_GT(no_person_score, person_score);
-
-  MicroPrintf("Ran successfully\n");
+  RawPutc('Z');
+  // MicroPrintf("Ran successfully\n");
 }
 
 TF_LITE_MICRO_TESTS_MAIN

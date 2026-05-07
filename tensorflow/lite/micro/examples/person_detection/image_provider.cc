@@ -13,14 +13,74 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
+// #include "tensorflow/lite/micro/examples/person_detection/image_provider.h"
+
+// #include "tensorflow/lite/micro/examples/person_detection/model_settings.h"
+
+// TfLiteStatus GetImage(int image_width, int image_height, int channels,
+//                       int8_t* image_data) {
+//   for (int i = 0; i < image_width * image_height * channels; ++i) {
+//     image_data[i] = 0;
+//   }
+//   return kTfLiteOk;
+// }
+
+
 #include "tensorflow/lite/micro/examples/person_detection/image_provider.h"
 
+#include <cstring>
+
 #include "tensorflow/lite/micro/examples/person_detection/model_settings.h"
+#include "tensorflow/lite/micro/examples/person_detection/testdata/no_person_image_data.h"
+#include "tensorflow/lite/micro/examples/person_detection/testdata/person_image_data.h"
+#include "tensorflow/lite/micro/micro_log.h"
+
+static inline void RawPutu(char c) {
+  volatile uint32_t* const uart_tx =
+      reinterpret_cast<volatile uint32_t*>(0x40600000u + 0x04u);
+  *uart_tx = static_cast<uint32_t>(static_cast<uint8_t>(c));
+}
+
 
 TfLiteStatus GetImage(int image_width, int image_height, int channels,
                       int8_t* image_data) {
-  for (int i = 0; i < image_width * image_height * channels; ++i) {
-    image_data[i] = 0;
+  if (image_data == nullptr) {
+    // RawPutu('Q');
+    // MicroPrintf("GetImage: null buffer\n");
+    return kTfLiteError;
   }
+
+  if (image_width != kNumCols || image_height != kNumRows ||
+      channels != kNumChannels) {
+      // RawPutu('R');
+    // MicroPrintf("GetImage: bad shape %d x %d x %d\n",
+    //             image_width, image_height, channels);
+    return kTfLiteError;
+  }
+
+  static int which = 0;
+  const int image_size = image_width * image_height * channels;
+
+  if (which == 0) {
+    if (g_person_image_data_size != image_size) {
+      // RawPutu('S');
+      // MicroPrintf("person image size mismatch\n");
+      return kTfLiteError;
+    }
+    memcpy(image_data, g_person_image_data, image_size);
+      // RawPutu('T');
+    // MicroPrintf("GetImage: person test image\n");
+  } else {
+    if (g_no_person_image_data_size != image_size) {
+      // RawPutu('U');
+      // MicroPrintf("no_person image size mismatch\n");
+      return kTfLiteError;
+    }
+    memcpy(image_data, g_no_person_image_data, image_size);
+    // RawPutu('V');
+    // MicroPrintf("GetImage: no_person test image\n");
+  }
+
+  which ^= 1;
   return kTfLiteOk;
 }

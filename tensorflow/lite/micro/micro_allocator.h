@@ -180,6 +180,39 @@ class MicroAllocator {
   // Return value is nullptr if the allocations failed.
   SubgraphAllocations* StartModelAllocation(const Model* model);
 
+  void* AllocatePersistentBufferDirect(size_t bytes,
+                                     size_t alignment = alignof(int));
+
+  
+  
+                                     __attribute__((noinline))
+  SubgraphAllocations* StartModelAllocationDirect(const Model* model);
+
+  __attribute__((noinline))  
+  TfLiteStatus AllocateVariablesDirect(
+    const SubGraph* subgraph, TfLiteEvalTensor* eval_tensors,
+    const int32_t* offline_planner_offsets);
+
+  __attribute__((noinline))
+  uint8_t* AllocatePersistentBufferFromPersistentDirect(size_t size, size_t alignment);
+
+  __attribute__((noinline))
+  TfLiteStatus InitScratchBufferDataDirect();
+
+  __attribute__((noinline))
+  uint8_t* AllocateResizableBufferFromNonPersistentDirect(size_t size,
+                                                          size_t alignment);
+
+  __attribute__((noinline))
+  TfLiteStatus AllocateTfLiteEvalTensorsDirect(const Model* model,
+                                              SubgraphAllocations* output);
+
+  __attribute__((noinline))
+  TfLiteStatus AllocateNodeAndRegistrationsDirect(const Model* model,
+                                                  SubgraphAllocations* output);
+
+
+
   // Finish allocating internal resources required for model inference.
   //
   // -Plan the memory for activation tensors and scratch buffers.
@@ -192,6 +225,7 @@ class MicroAllocator {
   // handles are stored in the out-param `scratch_buffer_handles` array which is
   // allocated in this method. This value will be used in `GetScratchBuffer`
   // call to retrieve scratch buffers.
+  __attribute__((noinline))
   TfLiteStatus FinishModelAllocation(
       const Model* model, SubgraphAllocations* subgraph_allocations,
       ScratchBufferHandle** scratch_buffer_handles);

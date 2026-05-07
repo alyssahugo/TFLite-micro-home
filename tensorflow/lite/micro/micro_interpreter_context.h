@@ -90,6 +90,7 @@ class MicroInterpreterContext : public MicroContext {
   virtual TfLiteEvalTensor* GetEvalTensor(int tensor_idx) override;
 
   // Sets the State of MemoryPlanning MicroInterpreterContext
+  __attribute__((noinline))
   void SetInterpreterState(InterpreterState state);
 
   // Sets the State of MemoryPlanning MicroInterpreterContext

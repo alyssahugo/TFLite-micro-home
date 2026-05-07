@@ -138,6 +138,7 @@ class MicroInterpreter {
   // of the model from values inside the flatbuffer (loaded from the TfLiteModel
   // instance). Persistent data (e.g. operator data) is allocated from the
   // arena.
+  __attribute__((noinline))
   TfLiteStatus PrepareNodeAndRegistrationDataFromFlatbuffer();
 
   // For debugging only.

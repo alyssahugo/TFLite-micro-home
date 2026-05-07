@@ -26,6 +26,44 @@ limitations under the License.
 #include "tensorflow/lite/micro/kernels/kernel_util.h"
 #include "tensorflow/lite/micro/micro_log.h"
 
+
+#include <stdint.h>
+
+static inline void RawPutc(char c) {
+  volatile uint32_t* const uart_tx =
+      reinterpret_cast<volatile uint32_t*>(0x40600000u + 0x04u);
+  volatile uint32_t* const uart_status =
+      reinterpret_cast<volatile uint32_t*>(0x40600000u + 0x08u);
+
+  while ((*uart_status) & 0x08u) {
+  }
+
+  *uart_tx = static_cast<uint32_t>(static_cast<uint8_t>(c));
+}
+
+static inline void RawNewline() {
+  RawPutc('\r');
+  RawPutc('\n');
+}
+
+static inline void RawPutHexNibble(uint32_t v) {
+  v &= 0xFu;
+  RawPutc((v < 10u) ? static_cast<char>('0' + v)
+                    : static_cast<char>('A' + (v - 10u)));
+}
+
+static inline void RawPutHex32(uint32_t v) {
+  for (int shift = 28; shift >= 0; shift -= 4) {
+    RawPutHexNibble(v >> shift);
+  }
+}
+
+static inline void RawTagHex(char tag, uint32_t v) {
+  RawPutc(tag);
+  RawPutHex32(v);
+  RawPutc(' ');
+}
+
 namespace tflite {
 
 const int kDepthwiseConvInputTensor = 0;
@@ -94,46 +132,135 @@ TfLiteStatus CalculateOpDataDepthwiseConv(
       params.stride_height, params.stride_width, params.dilation_height_factor,
       params.dilation_width_factor, height, width, filter_height, filter_width,
       padding, &out_height, &out_width);
+RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('W'); RawPutc('0'); RawPutc(']');
+RawNewline();
 
   MicroContext* micro_context = GetMicroContext(context);
-
+RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('W'); RawPutc('1'); RawPutc(']');
+RawTagHex('m', static_cast<uint32_t>(
+                   reinterpret_cast<uintptr_t>(micro_context)));
+RawNewline();
   TfLiteTensor* input =
       micro_context->AllocateTempInputTensor(node, kConvInputTensor);
+
+      RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('W'); RawPutc('2'); RawPutc(']');
+RawTagHex('i', static_cast<uint32_t>(
+                   reinterpret_cast<uintptr_t>(input)));
+RawNewline();
   TF_LITE_ENSURE(context, input != nullptr);
-  TfLiteTensor* filter =
-      micro_context->AllocateTempInputTensor(node, kConvWeightsTensor);
-  TF_LITE_ENSURE(context, filter != nullptr);
-  TfLiteTensor* bias =
-      micro_context->AllocateTempInputTensor(node, kConvBiasTensor);
-  TfLiteTensor* output =
-      micro_context->AllocateTempOutputTensor(node, kConvOutputTensor);
-  TF_LITE_ENSURE(context, output != nullptr);
+//   TfLiteTensor* filter =
+//       micro_context->AllocateTempInputTensor(node, kConvWeightsTensor);
+
+
+
+//   TF_LITE_ENSURE(context, filter != nullptr);
+//   TfLiteTensor* bias =
+//       micro_context->AllocateTempInputTensor(node, kConvBiasTensor);
+//   TfLiteTensor* output =
+//       micro_context->AllocateTempOutputTensor(node, kConvOutputTensor);
+//   TF_LITE_ENSURE(context, output != nullptr);
+
+
+
+TfLiteTensor* filter =
+    micro_context->AllocateTempInputTensor(node, kConvWeightsTensor);
+
+RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('W'); RawPutc('3'); RawPutc(']');
+RawTagHex('f', static_cast<uint32_t>(
+                   reinterpret_cast<uintptr_t>(filter)));
+RawNewline();
+
+TF_LITE_ENSURE(context, filter != nullptr);
+
+TfLiteTensor* bias =
+    micro_context->AllocateTempInputTensor(node, kConvBiasTensor);
+
+RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('W'); RawPutc('4'); RawPutc(']');
+RawTagHex('b', static_cast<uint32_t>(
+                   reinterpret_cast<uintptr_t>(bias)));
+RawNewline();
+
+TfLiteTensor* output =
+    micro_context->AllocateTempOutputTensor(node, kConvOutputTensor);
+
+RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('W'); RawPutc('5'); RawPutc(']');
+RawTagHex('o', static_cast<uint32_t>(
+                   reinterpret_cast<uintptr_t>(output)));
+RawNewline();
+
+TF_LITE_ENSURE(context, output != nullptr);
 
   // Note that quantized inference requires that all tensors have their
   // parameters set. This is usually done during quantized training.
   if (data_type != kTfLiteFloat32) {
     int output_channels = filter->dims->data[kDepthwiseConvQuantizedDimension];
 
-    TF_LITE_ENSURE_STATUS(tflite::PopulateConvolutionQuantizationParams(
+    // TF_LITE_ENSURE_STATUS(tflite::PopulateConvolutionQuantizationParams(
+    //     context, input, filter, bias, output, params.activation,
+    //     &data->output_multiplier, &data->output_shift,
+    //     &data->output_activation_min, &data->output_activation_max,
+    //     data->per_channel_output_multiplier, data->per_channel_output_shift,
+    //     output_channels));
+
+
+    RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('W'); RawPutc('6'); RawPutc(']');
+    RawTagHex('c', static_cast<uint32_t>(output_channels));
+    RawNewline();
+
+    TfLiteStatus quant_status = tflite::PopulateConvolutionQuantizationParams(
         context, input, filter, bias, output, params.activation,
         &data->output_multiplier, &data->output_shift,
         &data->output_activation_min, &data->output_activation_max,
         data->per_channel_output_multiplier, data->per_channel_output_shift,
-        output_channels));
+        output_channels);
+
+    RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('7'); RawPutc(']');
+    RawTagHex('s', static_cast<uint32_t>(quant_status));
+    RawNewline();
+
+    TF_LITE_ENSURE_STATUS(quant_status);
   }
 
   data->input_zero_point = input->params.zero_point;
   data->filter_zero_point = filter->params.zero_point;
   data->output_zero_point = output->params.zero_point;
 
-  micro_context->DeallocateTempTfLiteTensor(input);
-  micro_context->DeallocateTempTfLiteTensor(filter);
-  if (has_bias) {
-    micro_context->DeallocateTempTfLiteTensor(bias);
-  }
-  micro_context->DeallocateTempTfLiteTensor(output);
+//   micro_context->DeallocateTempTfLiteTensor(input);
+//   micro_context->DeallocateTempTfLiteTensor(filter);
+//   if (has_bias) {
+//     micro_context->DeallocateTempTfLiteTensor(bias);
+//   }
+//   micro_context->DeallocateTempTfLiteTensor(output);
 
-  return kTfLiteOk;
+//   return kTfLiteOk;
+
+    RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('W'); RawPutc('8'); RawPutc(']');
+    RawNewline();
+
+    micro_context->DeallocateTempTfLiteTensor(input);
+
+    RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('W'); RawPutc('9'); RawPutc(']');
+    RawNewline();
+
+    micro_context->DeallocateTempTfLiteTensor(filter);
+
+    RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('A'); RawPutc(']');
+    RawNewline();
+
+    if (has_bias) {
+    micro_context->DeallocateTempTfLiteTensor(bias);
+    }
+
+    RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('B'); RawPutc(']');
+    RawNewline();
+
+    micro_context->DeallocateTempTfLiteTensor(output);
+
+    RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('C'); RawPutc(']');
+    RawNewline();
+
+    return kTfLiteOk;
+
 }
 
 TfLiteStatus DepthwiseConvPrepare(TfLiteContext* context, TfLiteNode* node) {
@@ -208,9 +335,25 @@ TfLiteStatus DepthwiseConvPrepare(TfLiteContext* context, TfLiteNode* node) {
                                          &data->filter_buffer_index);
   }
 
-  TF_LITE_ENSURE_STATUS(CalculateOpDataDepthwiseConv(
-      context, node, params, input_width, input_height, filter_width,
-      filter_height, output_width, output_height, input->type, data));
+//   TF_LITE_ENSURE_STATUS(CalculateOpDataDepthwiseConv(
+//       context, node, params, input_width, input_height, filter_width,
+//       filter_height, output_width, output_height, input->type, data));
+
+    RawPutc('['); RawPutc('D'); RawPutc('P'); RawPutc('B'); RawPutc(']');
+    RawTagHex('i', static_cast<uint32_t>(input->type));
+    RawTagHex('f', static_cast<uint32_t>(filter->type));
+    RawTagHex('o', static_cast<uint32_t>(output->type));
+    RawNewline();
+
+    TfLiteStatus calc_status = CalculateOpDataDepthwiseConv(
+        context, node, params, input_width, input_height, filter_width,
+        filter_height, output_width, output_height, input->type, data);
+
+    RawPutc('['); RawPutc('D'); RawPutc('P'); RawPutc('C'); RawPutc(']');
+    RawTagHex('s', static_cast<uint32_t>(calc_status));
+    RawNewline();
+
+    TF_LITE_ENSURE_STATUS(calc_status);
 
 #ifdef USE_TFLM_COMPRESSION
 
@@ -229,11 +372,32 @@ TfLiteStatus DepthwiseConvPrepare(TfLiteContext* context, TfLiteNode* node) {
 
 #endif  // USE_TFLM_COMPRESSION
 
-  micro_context->DeallocateTempTfLiteTensor(output);
-  micro_context->DeallocateTempTfLiteTensor(input);
-  micro_context->DeallocateTempTfLiteTensor(filter);
+//   micro_context->DeallocateTempTfLiteTensor(output);
+//   micro_context->DeallocateTempTfLiteTensor(input);
+//   micro_context->DeallocateTempTfLiteTensor(filter);
 
-  return kTfLiteOk;
+//   return kTfLiteOk;
+
+RawPutc('['); RawPutc('D'); RawPutc('P'); RawPutc('D'); RawPutc(']');
+RawNewline();
+
+micro_context->DeallocateTempTfLiteTensor(output);
+
+RawPutc('['); RawPutc('D'); RawPutc('P'); RawPutc('E'); RawPutc(']');
+RawNewline();
+
+micro_context->DeallocateTempTfLiteTensor(input);
+
+RawPutc('['); RawPutc('D'); RawPutc('P'); RawPutc('F'); RawPutc(']');
+RawNewline();
+
+micro_context->DeallocateTempTfLiteTensor(filter);
+
+RawPutc('['); RawPutc('D'); RawPutc('P'); RawPutc('G'); RawPutc(']');
+RawNewline();
+
+return kTfLiteOk;
+
 }
 
 }  // namespace tflite

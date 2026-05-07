@@ -29,6 +29,21 @@ limitations under the License.
 #include "tensorflow/lite/micro/kernels/micro_ops.h"
 #include "tensorflow/lite/micro/micro_log.h"
 
+// static inline void RawPutcH(char c) {
+//   volatile uint32_t* const uart_tx =
+//       reinterpret_cast<volatile uint32_t*>(0x40600000u + 0x04u);
+//   volatile uint32_t* const uart_status =
+//       reinterpret_cast<volatile uint32_t*>(0x40600000u + 0x08u);
+
+//   while ((*uart_status) & 0x08u) {}
+//   *uart_tx = static_cast<uint32_t>(static_cast<uint8_t>(c));
+// }
+
+// static inline void RawNewlineH() {
+//   RawPutcH('\r');
+//   RawPutcH('\n');
+// }
+
 namespace tflite {
 
 extern const int kPoolingInputTensor;
@@ -63,6 +78,9 @@ void AveragePoolingEvalQuantized(TfLiteContext* context, const TfLiteNode* node,
                                  const OpDataPooling* data,
                                  const TfLiteEvalTensor* input,
                                  TfLiteEvalTensor* output) {
+  // RawPutcH('['); RawPutcH('Q'); RawPutcH('0'); RawPutcH(']');
+  // RawNewlineH();
+
   TFLITE_DCHECK(input->type == kTfLiteInt8 || input->type == kTfLiteInt16);
 
   PoolParams op_params;
@@ -74,12 +92,16 @@ void AveragePoolingEvalQuantized(TfLiteContext* context, const TfLiteNode* node,
   op_params.padding_values.width = data->padding.width;
   op_params.quantized_activation_min = data->activation_min;
   op_params.quantized_activation_max = data->activation_max;
+  // RawPutcH('['); RawPutcH('Q'); RawPutcH('1'); RawPutcH(']');
+  // RawNewlineH();
 
   reference_integer_ops::AveragePool(op_params,
                                      tflite::micro::GetTensorShape(input),
                                      tflite::micro::GetTensorData<T>(input),
                                      tflite::micro::GetTensorShape(output),
                                      tflite::micro::GetTensorData<T>(output));
+  // RawPutcH('['); RawPutcH('Q'); RawPutcH('2'); RawPutcH(']');
+  // RawNewlineH();
 }
 
 void MaxPoolingEvalFloat(TfLiteContext* context, TfLiteNode* node,

@@ -50,6 +50,7 @@ class NonPersistentArenaBufferAllocator : public INonPersistentBufferAllocator {
 
   // Resizes a buffer that is previously returned by the
   // AllocateResizableBuffer.
+  __attribute__((noinline))
   TfLiteStatus ResizeBuffer(uint8_t* resizable_buf, size_t size,
                             size_t alignment) override;
 
@@ -66,6 +67,9 @@ class NonPersistentArenaBufferAllocator : public INonPersistentBufferAllocator {
   // the memory is planned by the memory planner separately at Invoke stage.
   TfLiteStatus ReserveNonPersistentOverlayMemory(size_t size,
                                                  size_t alignment) override;
+
+    __attribute__((noinline))
+    uint8_t* AllocateResizableBufferDirect(size_t size, size_t alignment);
 
   // Returns the size of non-persistent buffer in use.
   size_t GetNonPersistentUsedBytes() const override;

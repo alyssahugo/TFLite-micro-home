@@ -24,6 +24,52 @@ limitations under the License.
 #include "tensorflow/lite/micro/memory_planner/greedy_memory_planner.h"
 #include "tensorflow/lite/micro/micro_log.h"
 
+#include <stdint.h>
+
+static inline void RawPutc(char c) {
+  volatile uint32_t* const uart_tx =
+      reinterpret_cast<volatile uint32_t*>(0x40600000u + 0x04u);
+  volatile uint32_t* const uart_status =
+      reinterpret_cast<volatile uint32_t*>(0x40600000u + 0x08u);
+
+  while ((*uart_status) & 0x08u) {
+  }
+
+  *uart_tx = static_cast<uint32_t>(static_cast<uint8_t>(c));
+}
+
+static inline void RawNewline() {
+  RawPutc('\r');
+  RawPutc('\n');
+}
+
+static inline void RawPutHexNibble(uint32_t v) {
+  v &= 0xFu;
+  RawPutc((v < 10u) ? static_cast<char>('0' + v)
+                    : static_cast<char>('A' + (v - 10u)));
+}
+
+static inline void RawPutHex32(uint32_t v) {
+  for (int shift = 28; shift >= 0; shift -= 4) {
+    RawPutHexNibble(v >> shift);
+  }
+}
+
+static inline void RawTagHex(char tag, uint32_t v) {
+  RawPutc(tag);
+  RawPutHex32(v);
+  RawPutc(' ');
+}
+
+static inline void DebugDelay_NoUART() {
+  volatile uint32_t sink = 0;
+  for (volatile int i = 0; i < 1000; ++i) {
+    sink += static_cast<uint32_t>(i);
+  }
+  asm volatile("" ::: "memory");
+}
+
+
 namespace tflite {
 
 namespace {
@@ -129,7 +175,13 @@ TfLiteStatus AllocationInfoBuilder::CreateAllocationInfo(
   info_.allocation_info_count = tensor_count + scratch_buffer_request_count;
   info_.scratch_buffer_count = scratch_buffer_request_count;
   size_t bytes = sizeof(AllocationInfo) * info_.allocation_info_count;
-
+  RawPutc('['); RawPutc('C'); RawPutc('A'); RawPutc('I'); RawPutc(']');
+  RawTagHex('t', static_cast<uint32_t>(info_.tensor_count));
+  RawTagHex('o', static_cast<uint32_t>(info_.scratch_offset));
+  RawTagHex('a', static_cast<uint32_t>(info_.allocation_info_count));
+  RawTagHex('s', static_cast<uint32_t>(info_.scratch_buffer_count));
+  RawTagHex('b', static_cast<uint32_t>(bytes));
+  RawNewline();
   // Allocate an array of AllocationInfo structs from the temp section. This
   // struct will be used by AllocationInfoBuilder to find buffer usage.
   info_.allocation_info = reinterpret_cast<AllocationInfo*>(
@@ -230,82 +282,266 @@ TfLiteStatus AllocationInfoBuilder::InitializeAllocationInfo(
   return kTfLiteOk;
 }
 
+// TfLiteStatus AllocationInfoBuilder::MarkAllocationLifetimes(
+//     int subgraph_idx, internal::ScratchBufferRequest* scratch_buffer_requests,
+//     ScratchBufferHandle* scratch_buffer_handles,
+//     SubgraphAllocations* allocations) {
+//   const SubGraph* subgraph = model_->subgraphs()->Get(subgraph_idx);
+
+//   AllocationInfo* allocation_info = info_.allocation_info;
+//   // Each subgraph's tensor allocations are in a contiguous block starting at
+//   // subgraph_offsets_[subgraph index] with one entry per tensor.
+//   AllocationInfo* subgraph_allocation_info =
+//       &allocation_info[info_.subgraph_offsets[subgraph_idx]];
+
+//   uint32_t operators_size = NumSubgraphOperators(subgraph);
+//   // Mark all inputs as created at the start of the subgraph invocation.
+//   for (size_t i = 0;
+//        subgraph->inputs() != nullptr && i < subgraph->inputs()->size(); ++i) {
+//     const int tensor_index = subgraph->inputs()->Get(i);
+//     AllocationInfo* current = &subgraph_allocation_info[tensor_index];
+//     UpdateFirstCreated(current, allocation_scope_count_);
+//     // This will ensure that the tensors that are inputs to the subgraphs
+//     // but not used in any ops also have a reasonable lifetime.
+//     UpdateLastUsed(current, allocation_scope_count_);
+//   }
+
+//   for (uint32_t i = 0; i < operators_size; i++) {
+//     // Each operator has a new allocation scope.
+//     allocation_scope_count_++;
+//     const auto* op = subgraph->operators()->Get(i);
+//     // Figure out when the first creation and use of each tensor is.
+//     for (size_t n = 0; op->outputs() != nullptr && n < op->outputs()->size();
+//          ++n) {
+//       const int tensor_index = op->outputs()->Get(n);
+//       AllocationInfo* current = &subgraph_allocation_info[tensor_index];
+//       UpdateFirstCreated(current, allocation_scope_count_);
+//     }
+
+//     // Keep track of scope count before any subgraphs, so that scratch buffers'
+//     // lifetime within a control flow op properly overlaps with all subgraphs.
+//     int start_allocation_scope_count = allocation_scope_count_;
+
+//     // Control flow operators can invoke subgraphs. Plan these subgraphs
+//     // before continuing on to the rest of the graph.
+//     MarkSubgraphLifetimesIfNecessary(op, scratch_buffer_requests,
+//                                      scratch_buffer_handles, allocations);
+
+//     // Figure out when the last use of each tensor is.
+//     for (size_t n = 0; op->inputs() != nullptr && n < op->inputs()->size();
+//          ++n) {
+//       const int tensor_index = op->inputs()->Get(n);
+//       // Optional bias tensors can have an index of -1 when they are omitted.
+//       if (tensor_index >= 0) {
+//         AllocationInfo* current = &subgraph_allocation_info[tensor_index];
+//         // No need to update creation since it is either marked by the subgraph
+//         // or producer op, or it is not part of the memory plan (weight, bias
+//         // tensor).
+//         UpdateLastUsed(current, allocation_scope_count_);
+//       }
+//     }
+//     for (size_t n = 0; op->outputs() != nullptr && n < op->outputs()->size();
+//          ++n) {
+//       const int tensor_index = op->outputs()->Get(n);
+//       AllocationInfo* current = &subgraph_allocation_info[tensor_index];
+//       UpdateLastUsed(current, allocation_scope_count_);
+//     }
+
+//     // Mark thse lifetime of scratch buffers belonging to the current node. This
+//     // operation is O(N * M) where N is the total number of visited nodes and M
+//     // is the total number of scratch buffers.
+//     // TODO(b/217794030): Optimize this memory planning code.
+//     AllocationInfo* scratch_allocation_info =
+//         &allocation_info[info_.scratch_offset];
+//     for (size_t scratch_idx = 0; scratch_idx < info_.scratch_buffer_count;
+//          scratch_idx++) {
+//       internal::ScratchBufferRequest request =
+//           scratch_buffer_requests[scratch_idx];
+//       AllocationInfo* current = &scratch_allocation_info[scratch_idx];
+//       if (request.node_idx == static_cast<int>(i) &&
+//           request.subgraph_idx == static_cast<int>(subgraph_idx)) {
+//         ScratchBufferHandle* current_handle =
+//             &(scratch_buffer_handles[scratch_idx]);
+//         current->output_ptr = reinterpret_cast<void**>(&current_handle->data);
+//         current->bytes = request.bytes;
+//         UpdateFirstCreated(current, start_allocation_scope_count);
+//         UpdateLastUsed(current, allocation_scope_count_);
+//       }
+//     }
+//   }
+
+//   // Mark all outputs as persistent to the end of the subgraph invocation.
+//   for (size_t i = 0;
+//        subgraph->outputs() != nullptr && i < subgraph->outputs()->size(); ++i) {
+//     const int tensor_index = subgraph->outputs()->Get(i);
+//     AllocationInfo* current = &subgraph_allocation_info[tensor_index];
+//     // Make sure to assign the First created value of the subgraph output
+//     // This will handle the case where the subgraph is empty. This helps
+//     // ensure all tensors have valid lifetimes before those are used by the
+//     // memory planner.
+//     UpdateFirstCreated(current, allocation_scope_count_);
+//     UpdateLastUsed(current, allocation_scope_count_);
+//   }
+//   return kTfLiteOk;
+// }
+
+
+__attribute__((noinline))
 TfLiteStatus AllocationInfoBuilder::MarkAllocationLifetimes(
     int subgraph_idx, internal::ScratchBufferRequest* scratch_buffer_requests,
     ScratchBufferHandle* scratch_buffer_handles,
     SubgraphAllocations* allocations) {
+  RawPutc('['); RawPutc('M'); RawPutc('L'); RawPutc('0'); RawPutc(']');
+  RawTagHex('g', static_cast<uint32_t>(subgraph_idx));
+  RawTagHex('q', static_cast<uint32_t>(reinterpret_cast<uintptr_t>(scratch_buffer_requests)));
+  RawTagHex('h', static_cast<uint32_t>(reinterpret_cast<uintptr_t>(scratch_buffer_handles)));
+  RawTagHex('a', static_cast<uint32_t>(reinterpret_cast<uintptr_t>(allocations)));
+  RawNewline();
+
   const SubGraph* subgraph = model_->subgraphs()->Get(subgraph_idx);
 
+  // RawPutc('['); RawPutc('M'); RawPutc('L'); RawPutc('1'); RawPutc(']');
+  // RawTagHex('s', static_cast<uint32_t>(reinterpret_cast<uintptr_t>(subgraph)));
+  // RawNewline();
+
   AllocationInfo* allocation_info = info_.allocation_info;
-  // Each subgraph's tensor allocations are in a contiguous block starting at
-  // subgraph_offsets_[subgraph index] with one entry per tensor.
+
+  // RawPutc('['); RawPutc('M'); RawPutc('L'); RawPutc('2'); RawPutc(']');
+  // RawTagHex('i', static_cast<uint32_t>(reinterpret_cast<uintptr_t>(allocation_info)));
+  // RawTagHex('o', static_cast<uint32_t>(info_.subgraph_offsets[subgraph_idx]));
+  // RawTagHex('t', static_cast<uint32_t>(info_.tensor_count));
+  // RawTagHex('c', static_cast<uint32_t>(info_.allocation_info_count));
+  // RawNewline();
+
   AllocationInfo* subgraph_allocation_info =
       &allocation_info[info_.subgraph_offsets[subgraph_idx]];
 
   uint32_t operators_size = NumSubgraphOperators(subgraph);
+
+  // RawPutc('['); RawPutc('M'); RawPutc('L'); RawPutc('3'); RawPutc(']');
+  // RawTagHex('n', static_cast<uint32_t>(operators_size));
+  // RawTagHex('p', static_cast<uint32_t>(reinterpret_cast<uintptr_t>(subgraph_allocation_info)));
+  // RawNewline();
+
   // Mark all inputs as created at the start of the subgraph invocation.
   for (size_t i = 0;
        subgraph->inputs() != nullptr && i < subgraph->inputs()->size(); ++i) {
     const int tensor_index = subgraph->inputs()->Get(i);
+
+    RawPutc('['); RawPutc('M'); RawPutc('I'); RawPutc('0'); RawPutc(']');
+    RawTagHex('i', static_cast<uint32_t>(i));
+    RawTagHex('t', static_cast<uint32_t>(tensor_index));
+    RawNewline();
+
     AllocationInfo* current = &subgraph_allocation_info[tensor_index];
     UpdateFirstCreated(current, allocation_scope_count_);
-    // This will ensure that the tensors that are inputs to the subgraphs
-    // but not used in any ops also have a reasonable lifetime.
     UpdateLastUsed(current, allocation_scope_count_);
   }
 
+  // RawPutc('['); RawPutc('M'); RawPutc('L'); RawPutc('4'); RawPutc(']');
+  // RawNewline();
+
   for (uint32_t i = 0; i < operators_size; i++) {
-    // Each operator has a new allocation scope.
     allocation_scope_count_++;
+
+    // RawPutc('['); RawPutc('M'); RawPutc('O'); RawPutc('0'); RawPutc(']');
+    // RawTagHex('i', static_cast<uint32_t>(i));
+    // RawTagHex('k', static_cast<uint32_t>(allocation_scope_count_));
+    // RawNewline();
+
     const auto* op = subgraph->operators()->Get(i);
-    // Figure out when the first creation and use of each tensor is.
+
+    RawPutc('['); RawPutc('M'); RawPutc('O'); RawPutc('1'); RawPutc(']');
+    RawTagHex('o', static_cast<uint32_t>(reinterpret_cast<uintptr_t>(op)));
+    RawNewline();
+
+    if (op == nullptr) {
+      RawPutc('['); RawPutc('M'); RawPutc('O'); RawPutc('X'); RawPutc(']');
+      RawNewline();
+      return kTfLiteError;
+    }
+
+    // Mark outputs first-created.
     for (size_t n = 0; op->outputs() != nullptr && n < op->outputs()->size();
          ++n) {
       const int tensor_index = op->outputs()->Get(n);
+
+      RawPutc('['); RawPutc('M'); RawPutc('O'); RawPutc('2'); RawPutc(']');
+      RawTagHex('n', static_cast<uint32_t>(n));
+      RawTagHex('t', static_cast<uint32_t>(tensor_index));
+      RawNewline();
+
       AllocationInfo* current = &subgraph_allocation_info[tensor_index];
       UpdateFirstCreated(current, allocation_scope_count_);
     }
 
-    // Keep track of scope count before any subgraphs, so that scratch buffers'
-    // lifetime within a control flow op properly overlaps with all subgraphs.
     int start_allocation_scope_count = allocation_scope_count_;
 
-    // Control flow operators can invoke subgraphs. Plan these subgraphs
-    // before continuing on to the rest of the graph.
-    MarkSubgraphLifetimesIfNecessary(op, scratch_buffer_requests,
-                                     scratch_buffer_handles, allocations);
+    RawPutc('['); RawPutc('M'); RawPutc('O'); RawPutc('3'); RawPutc(']');
+    RawNewline();
 
-    // Figure out when the last use of each tensor is.
+    TfLiteStatus sub_st = MarkSubgraphLifetimesIfNecessary(
+        op, scratch_buffer_requests, scratch_buffer_handles, allocations);
+
+    RawPutc('['); RawPutc('M'); RawPutc('O'); RawPutc('4'); RawPutc(']');
+    RawTagHex('s', static_cast<uint32_t>(sub_st));
+    RawNewline();
+
+    if (sub_st != kTfLiteOk) {
+      return sub_st;
+    }
+
+    // Mark inputs last-used.
     for (size_t n = 0; op->inputs() != nullptr && n < op->inputs()->size();
          ++n) {
       const int tensor_index = op->inputs()->Get(n);
-      // Optional bias tensors can have an index of -1 when they are omitted.
+
+      RawPutc('['); RawPutc('M'); RawPutc('O'); RawPutc('5'); RawPutc(']');
+      RawTagHex('n', static_cast<uint32_t>(n));
+      RawTagHex('t', static_cast<uint32_t>(tensor_index));
+      RawNewline();
+
       if (tensor_index >= 0) {
         AllocationInfo* current = &subgraph_allocation_info[tensor_index];
-        // No need to update creation since it is either marked by the subgraph
-        // or producer op, or it is not part of the memory plan (weight, bias
-        // tensor).
         UpdateLastUsed(current, allocation_scope_count_);
       }
     }
+
+    // Mark outputs last-used.
     for (size_t n = 0; op->outputs() != nullptr && n < op->outputs()->size();
          ++n) {
       const int tensor_index = op->outputs()->Get(n);
+
+      RawPutc('['); RawPutc('M'); RawPutc('O'); RawPutc('6'); RawPutc(']');
+      RawTagHex('n', static_cast<uint32_t>(n));
+      RawTagHex('t', static_cast<uint32_t>(tensor_index));
+      RawNewline();
+
       AllocationInfo* current = &subgraph_allocation_info[tensor_index];
       UpdateLastUsed(current, allocation_scope_count_);
     }
 
-    // Mark thse lifetime of scratch buffers belonging to the current node. This
-    // operation is O(N * M) where N is the total number of visited nodes and M
-    // is the total number of scratch buffers.
-    // TODO(b/217794030): Optimize this memory planning code.
+    RawPutc('['); RawPutc('M'); RawPutc('O'); RawPutc('7'); RawPutc(']');
+    RawTagHex('s', static_cast<uint32_t>(info_.scratch_buffer_count));
+    RawNewline();
+
     AllocationInfo* scratch_allocation_info =
         &allocation_info[info_.scratch_offset];
+
     for (size_t scratch_idx = 0; scratch_idx < info_.scratch_buffer_count;
          scratch_idx++) {
       internal::ScratchBufferRequest request =
           scratch_buffer_requests[scratch_idx];
+
+      RawPutc('['); RawPutc('M'); RawPutc('S'); RawPutc('0'); RawPutc(']');
+      RawTagHex('i', static_cast<uint32_t>(scratch_idx));
+      RawTagHex('n', static_cast<uint32_t>(request.node_idx));
+      RawTagHex('g', static_cast<uint32_t>(request.subgraph_idx));
+      RawTagHex('b', static_cast<uint32_t>(request.bytes));
+      RawNewline();
+
       AllocationInfo* current = &scratch_allocation_info[scratch_idx];
+
       if (request.node_idx == static_cast<int>(i) &&
           request.subgraph_idx == static_cast<int>(subgraph_idx)) {
         ScratchBufferHandle* current_handle =
@@ -316,22 +552,40 @@ TfLiteStatus AllocationInfoBuilder::MarkAllocationLifetimes(
         UpdateLastUsed(current, allocation_scope_count_);
       }
     }
+
+    RawPutc('['); RawPutc('M'); RawPutc('O'); RawPutc('8'); RawPutc(']');
+    RawTagHex('i', static_cast<uint32_t>(i));
+    RawNewline();
   }
+
+  RawPutc('['); RawPutc('M'); RawPutc('L'); RawPutc('5'); RawPutc(']');
+  RawNewline();
 
   // Mark all outputs as persistent to the end of the subgraph invocation.
   for (size_t i = 0;
        subgraph->outputs() != nullptr && i < subgraph->outputs()->size(); ++i) {
     const int tensor_index = subgraph->outputs()->Get(i);
+
+    RawPutc('['); RawPutc('M'); RawPutc('U'); RawPutc('0'); RawPutc(']');
+    RawTagHex('i', static_cast<uint32_t>(i));
+    RawTagHex('t', static_cast<uint32_t>(tensor_index));
+    RawNewline();
+
     AllocationInfo* current = &subgraph_allocation_info[tensor_index];
-    // Make sure to assign the First created value of the subgraph output
-    // This will handle the case where the subgraph is empty. This helps
-    // ensure all tensors have valid lifetimes before those are used by the
-    // memory planner.
     UpdateFirstCreated(current, allocation_scope_count_);
     UpdateLastUsed(current, allocation_scope_count_);
   }
+
+  RawPutc('['); RawPutc('M'); RawPutc('L'); RawPutc('6'); RawPutc(']');
+  RawNewline();
+
+  DebugDelay_NoUART();
+  DebugDelay_NoUART();
+
+
   return kTfLiteOk;
 }
+
 
 // Get offline tensors allocation plan. See
 // micro/docs/memory_management.md for more info.

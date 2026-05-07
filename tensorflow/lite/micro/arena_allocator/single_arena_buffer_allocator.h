@@ -51,6 +51,11 @@ class SingleArenaBufferAllocator : public INonPersistentBufferAllocator,
   virtual TfLiteStatus ResizeBuffer(uint8_t* resizable_buf, size_t size,
                                     size_t alignment) override;
 
+    __attribute__((noinline))
+    TfLiteStatus ResizeBufferDirect(uint8_t* resizable_buf,
+                                    size_t size,
+                                    size_t alignment);
+
   // Returns a buffer that is resizable viable ResizeBuffer(). Only one
   // resizable buffer is currently supported.
   virtual uint8_t* AllocateResizableBuffer(size_t size,
@@ -78,6 +83,15 @@ class SingleArenaBufferAllocator : public INonPersistentBufferAllocator,
   // AllocateFromHead() is called before a call to ResetTempAllocations(), it
   // will fail with an error message.
   virtual uint8_t* AllocateTemp(size_t size, size_t alignment) override;
+
+  __attribute__((noinline))
+    uint8_t* AllocateResizableBufferDirect(size_t size, size_t alignment);
+
+  size_t GetAvailableMemoryDirect(size_t alignment) const;
+  uint8_t* GetOverlayMemoryAddressDirect() const;
+  TfLiteStatus ReserveNonPersistentOverlayMemoryDirect(size_t size,
+                                                      size_t alignment);
+  TfLiteStatus DeallocateResizableBufferDirect(uint8_t* resizable_buf);
 
   // Signals that a temporary buffer is no longer needed. This is currently for
   // book-keeping purpose and the memory region are not immediately available
@@ -109,6 +123,19 @@ class SingleArenaBufferAllocator : public INonPersistentBufferAllocator,
   // Returns the number of used bytes in the allocator. This number takes in
   // account any temporary allocations.
   size_t GetUsedBytes() const;
+
+  __attribute__((noinline))
+    uint8_t* AllocatePersistentBufferDirect(size_t size, size_t alignment);
+
+
+    __attribute__((noinline))
+    uint8_t* AllocateTempDirect(size_t size, size_t alignment);
+
+    __attribute__((noinline))
+    void DeallocateTempDirect(uint8_t* temp_buf);
+
+    __attribute__((noinline))
+    TfLiteStatus ResetTempAllocationsDirect();
 
   TF_LITE_REMOVE_VIRTUAL_DELETE
 

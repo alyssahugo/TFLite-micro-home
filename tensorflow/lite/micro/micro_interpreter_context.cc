@@ -23,6 +23,20 @@ limitations under the License.
 #include "tensorflow/lite/micro/micro_arena_constants.h"
 #include "tensorflow/lite/micro/micro_utils.h"
 
+#include <stdint.h>
+
+static inline void RawPutc(char c) {
+  volatile uint32_t* const uart_tx =
+      reinterpret_cast<volatile uint32_t*>(0x40600000u + 0x04u);
+  volatile uint32_t* const uart_status =
+      reinterpret_cast<volatile uint32_t*>(0x40600000u + 0x08u);
+
+  while ((*uart_status) & 0x08u) {
+  }
+
+  *uart_tx = static_cast<uint32_t>(static_cast<uint8_t>(c));
+}
+
 namespace tflite {
 
 namespace {
@@ -54,10 +68,27 @@ MicroInterpreterContext::MicroInterpreterContext(MicroAllocator* allocator,
 MicroInterpreterContext::~MicroInterpreterContext() {}
 
 void* MicroInterpreterContext::AllocatePersistentBuffer(size_t bytes) {
+  // RawPutc('A');
   TFLITE_DCHECK(state_ == InterpreterState::kPrepare ||
                 state_ == InterpreterState::kInit);
+  // RawPutc('L');
   return allocator_.AllocatePersistentBuffer(bytes);
+  // RawPutc('Y');
 }
+
+// void* MicroInterpreterContext::AllocatePersistentBuffer(size_t bytes) {
+//   RawPutc('['); RawPutc('M'); RawPutc('P'); RawPutc('0'); RawPutc(']');
+//   RawTagHex('s', static_cast<uint32_t>(bytes));
+//   RawNewline();
+
+//   void* result = allocator_.AllocatePersistentBufferDirect(bytes, alignof(int));
+
+//   RawPutc('['); RawPutc('M'); RawPutc('P'); RawPutc('1'); RawPutc(']');
+//   RawTagHex('r', static_cast<uint32_t>(reinterpret_cast<uintptr_t>(result)));
+//   RawNewline();
+
+//   return result;
+// }
 
 TfLiteStatus MicroInterpreterContext::RequestScratchBufferInArena(
     size_t bytes, int* buffer_idx) {
