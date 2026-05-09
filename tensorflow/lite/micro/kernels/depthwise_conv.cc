@@ -108,29 +108,93 @@ TfLiteStatus DepthwiseConvEval(TfLiteContext* context, TfLiteNode* node) {
               tflite::micro::GetTensorData<int8_t>(output));
           break;
         }
-        case kTfLiteInt8: {
-          reference_integer_ops::DepthwiseConvPerChannel(
-              DepthwiseConvParamsQuantized(params, data),
-              data.per_channel_output_multiplier, data.per_channel_output_shift,
-              tflite::micro::GetTensorShape(input),
-              tflite::micro::GetTensorData<int8_t>(input),
-              tflite::micro::GetTensorShape(filter),
-#ifdef USE_TFLM_COMPRESSION
-              tflite::micro::GetTensorData<int8_t>(micro_context, filter,
-                                                   filter_comp_td,
-                                                   data.weights_scratch_index),
-              tflite::micro::GetTensorShape(bias),
-              tflite::micro::GetOptionalTensorData<int32_t>(
-                  micro_context, bias, bias_comp_td, data.bias_scratch_index),
-#else   // USE_TFLM_COMPRESSION
-              tflite::micro::GetTensorData<int8_t>(filter),
-              tflite::micro::GetTensorShape(bias),
-              tflite::micro::GetOptionalTensorData<int32_t>(bias),
-#endif  // USE_TFLM_COMPRESSION
-              tflite::micro::GetTensorShape(output),
-              tflite::micro::GetTensorData<int8_t>(output));
-          break;
-        }
+//         case kTfLiteInt8: {
+//           reference_integer_ops::DepthwiseConvPerChannel(
+//               DepthwiseConvParamsQuantized(params, data),
+//               data.per_channel_output_multiplier, data.per_channel_output_shift,
+//               tflite::micro::GetTensorShape(input),
+//               tflite::micro::GetTensorData<int8_t>(input),
+//               tflite::micro::GetTensorShape(filter),
+// #ifdef USE_TFLM_COMPRESSION
+//               tflite::micro::GetTensorData<int8_t>(micro_context, filter,
+//                                                    filter_comp_td,
+//                                                    data.weights_scratch_index),
+//               tflite::micro::GetTensorShape(bias),
+//               tflite::micro::GetOptionalTensorData<int32_t>(
+//                   micro_context, bias, bias_comp_td, data.bias_scratch_index),
+// #else   // USE_TFLM_COMPRESSION
+//               tflite::micro::GetTensorData<int8_t>(filter),
+//               tflite::micro::GetTensorShape(bias),
+//               tflite::micro::GetOptionalTensorData<int32_t>(bias),
+// #endif  // USE_TFLM_COMPRESSION
+//               tflite::micro::GetTensorShape(output),
+//               tflite::micro::GetTensorData<int8_t>(output));
+//           break;
+//         }
+            case kTfLiteInt8: {
+              DepthwiseParams dbg_params = DepthwiseConvParamsQuantized(params, data);
+
+              const RuntimeShape input_shape = tflite::micro::GetTensorShape(input);
+              const RuntimeShape filter_shape = tflite::micro::GetTensorShape(filter);
+              const RuntimeShape output_shape = tflite::micro::GetTensorShape(output);
+
+              // // TEMP PROOF PATCH:
+              // // Force correct padding for OP01:
+              // // input  = [1,48,48,8]
+              // // filter = [1,3,3,8]
+              // // output = [1,48,48,8]
+              // // stride = 1x1
+              // if (input_shape.Dims(1) == 48 &&
+              //     input_shape.Dims(2) == 48 &&
+              //     input_shape.Dims(3) == 8 &&
+              //     filter_shape.Dims(1) == 3 &&
+              //     filter_shape.Dims(2) == 3 &&
+              //     output_shape.Dims(1) == 48 &&
+              //     output_shape.Dims(2) == 48 &&
+              //     output_shape.Dims(3) == 8 &&
+              //     dbg_params.stride_height == 1 &&
+              //     dbg_params.stride_width == 1) {
+              //   dbg_params.padding_values.height = 1;
+              //   dbg_params.padding_values.width = 1;
+              // }
+              // TEMP PROOF PATCH:
+              // For SAME 3x3 stride-1 depthwise layers where output spatial size equals input,
+              // padding should be 1 top/left.
+              if (filter_shape.Dims(1) == 3 &&
+                  filter_shape.Dims(2) == 3 &&
+                  output_shape.Dims(1) == input_shape.Dims(1) &&
+                  output_shape.Dims(2) == input_shape.Dims(2) &&
+                  dbg_params.stride_height == 1 &&
+                  dbg_params.stride_width == 1 &&
+                  dbg_params.dilation_height_factor == 1 &&
+                  dbg_params.dilation_width_factor == 1) {
+                dbg_params.padding_values.height = 1;
+                dbg_params.padding_values.width = 1;
+              }
+              
+
+              reference_integer_ops::DepthwiseConvPerChannel(
+                  dbg_params,
+                  data.per_channel_output_multiplier, data.per_channel_output_shift,
+                  input_shape,
+                  tflite::micro::GetTensorData<int8_t>(input),
+                  filter_shape,
+            #ifdef USE_TFLM_COMPRESSION
+                  tflite::micro::GetTensorData<int8_t>(micro_context, filter,
+                                                      filter_comp_td,
+                                                      data.weights_scratch_index),
+                  tflite::micro::GetTensorShape(bias),
+                  tflite::micro::GetOptionalTensorData<int32_t>(
+                      micro_context, bias, bias_comp_td, data.bias_scratch_index),
+            #else   // USE_TFLM_COMPRESSION
+                  tflite::micro::GetTensorData<int8_t>(filter),
+                  tflite::micro::GetTensorShape(bias),
+                  tflite::micro::GetOptionalTensorData<int32_t>(bias),
+            #endif  // USE_TFLM_COMPRESSION
+                  output_shape,
+                  tflite::micro::GetTensorData<int8_t>(output));
+              break;
+            }
         default:
           MicroPrintf("Filter type %s (%d) for input type %s not supported.",
                       TfLiteTypeGetName(filter->type), filter->type,
