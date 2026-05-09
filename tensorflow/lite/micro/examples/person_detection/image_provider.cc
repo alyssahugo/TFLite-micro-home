@@ -62,6 +62,7 @@ TfLiteStatus GetImage(int image_width, int image_height, int channels,
   const int image_size = image_width * image_height * channels;
 
   if (which == 0) {
+    // RawPutu('P');
     if (g_person_image_data_size != image_size) {
       // RawPutu('S');
       // MicroPrintf("person image size mismatch\n");
@@ -71,6 +72,7 @@ TfLiteStatus GetImage(int image_width, int image_height, int channels,
       // RawPutu('T');
     // MicroPrintf("GetImage: person test image\n");
   } else {
+    // RawPutu('U');
     if (g_no_person_image_data_size != image_size) {
       // RawPutu('U');
       // MicroPrintf("no_person image size mismatch\n");

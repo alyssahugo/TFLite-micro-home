@@ -222,42 +222,42 @@ inline void ConvPerChannel(
   const int output_width = output_shape.Dims(2);
 
   RawPutcD('['); RawPutcD('C'); RawPutcD('V'); RawPutcD('S'); RawPutcD(']');
-  RawTagHexD('b', static_cast<uint32_t>(batches));
-  RawTagHexD('h', static_cast<uint32_t>(input_height));
-  RawTagHexD('w', static_cast<uint32_t>(input_width));
-  RawTagHexD('c', static_cast<uint32_t>(input_depth));
-  RawTagHexD('f', static_cast<uint32_t>(filter_height));
-  RawTagHexD('g', static_cast<uint32_t>(filter_width));
-  RawTagHexD('d', static_cast<uint32_t>(filter_input_depth));
-  RawTagHexD('G', static_cast<uint32_t>(groups));
-  RawTagHexD('P', static_cast<uint32_t>(filters_per_group));
-  RawTagHexD('H', static_cast<uint32_t>(output_height));
-  RawTagHexD('W', static_cast<uint32_t>(output_width));
-  RawTagHexD('C', static_cast<uint32_t>(output_depth));
-  RawTagHexD('o', static_cast<uint32_t>(
-                     reinterpret_cast<uintptr_t>(output_data)));
-  RawNewlineD();
+  // RawTagHexD('b', static_cast<uint32_t>(batches));
+  // RawTagHexD('h', static_cast<uint32_t>(input_height));
+  // RawTagHexD('w', static_cast<uint32_t>(input_width));
+  // RawTagHexD('c', static_cast<uint32_t>(input_depth));
+  // RawTagHexD('f', static_cast<uint32_t>(filter_height));
+  // RawTagHexD('g', static_cast<uint32_t>(filter_width));
+  // RawTagHexD('d', static_cast<uint32_t>(filter_input_depth));
+  // RawTagHexD('G', static_cast<uint32_t>(groups));
+  // RawTagHexD('P', static_cast<uint32_t>(filters_per_group));
+  // RawTagHexD('H', static_cast<uint32_t>(output_height));
+  // RawTagHexD('W', static_cast<uint32_t>(output_width));
+  // RawTagHexD('C', static_cast<uint32_t>(output_depth));
+  // RawTagHexD('o', static_cast<uint32_t>(
+  //                    reinterpret_cast<uintptr_t>(output_data)));
+  // RawNewlineD();
 
   RawPutcD('['); RawPutcD('C'); RawPutcD('S'); RawPutcD('I'); RawPutcD(']');
-  RawTagHexD('0', static_cast<uint32_t>(input_shape.Dims(0)));
-  RawTagHexD('1', static_cast<uint32_t>(input_shape.Dims(1)));
+  // RawTagHexD('0', static_cast<uint32_t>(input_shape.Dims(0)));
+  // RawTagHexD('1', static_cast<uint32_t>(input_shape.Dims(1)));
   RawTagHexD('2', static_cast<uint32_t>(input_shape.Dims(2)));
-  RawTagHexD('3', static_cast<uint32_t>(input_shape.Dims(3)));
-  RawNewlineD();
+  // RawTagHexD('3', static_cast<uint32_t>(input_shape.Dims(3)));
+  // RawNewlineD();
 
-  RawPutcD('['); RawPutcD('C'); RawPutcD('S'); RawPutcD('O'); RawPutcD(']');
-  RawTagHexD('0', static_cast<uint32_t>(output_shape.Dims(0)));
-  RawTagHexD('1', static_cast<uint32_t>(output_shape.Dims(1)));
+  // RawPutcD('['); RawPutcD('C'); RawPutcD('S'); RawPutcD('O'); RawPutcD(']');
+  // RawTagHexD('0', static_cast<uint32_t>(output_shape.Dims(0)));
+  // RawTagHexD('1', static_cast<uint32_t>(output_shape.Dims(1)));
   RawTagHexD('2', static_cast<uint32_t>(output_shape.Dims(2)));
-  RawTagHexD('3', static_cast<uint32_t>(output_shape.Dims(3)));
-  RawNewlineD();
+  // RawTagHexD('3', static_cast<uint32_t>(output_shape.Dims(3)));
+  // RawNewlineD();
 
-  RawPutcD('['); RawPutcD('C'); RawPutcD('S'); RawPutcD('F'); RawPutcD(']');
-  RawTagHexD('0', static_cast<uint32_t>(filter_shape.Dims(0)));
-  RawTagHexD('1', static_cast<uint32_t>(filter_shape.Dims(1)));
-  RawTagHexD('2', static_cast<uint32_t>(filter_shape.Dims(2)));
-  RawTagHexD('3', static_cast<uint32_t>(filter_shape.Dims(3)));
-  RawNewlineD();
+  // RawPutcD('['); RawPutcD('C'); RawPutcD('S'); RawPutcD('F'); RawPutcD(']');
+  // RawTagHexD('0', static_cast<uint32_t>(filter_shape.Dims(0)));
+  // RawTagHexD('1', static_cast<uint32_t>(filter_shape.Dims(1)));
+  // RawTagHexD('2', static_cast<uint32_t>(filter_shape.Dims(2)));
+  // RawTagHexD('3', static_cast<uint32_t>(filter_shape.Dims(3)));
+  // RawNewlineD();
 
   for (int batch = 0; batch < MatchingDim(input_shape, 0, output_shape, 0);
        ++batch) {
@@ -327,22 +327,22 @@ inline void ConvPerChannel(
               Offset(output_shape, batch, out_y, out_x, out_channel);
 
           if (batch == 0 && out_y == 0 && out_x == 0 && out_channel == 0) {
-            RawPutcD('['); RawPutcD('C'); RawPutcD('V'); RawPutcD('W'); RawPutcD(']');
-            RawTagHexD('a', static_cast<uint32_t>(acc));
-            RawTagHexD('p', static_cast<uint32_t>(
-                                reinterpret_cast<uintptr_t>(
-                                    &output_data[out_offset])));
-            RawNewlineD();
+            // RawPutcD('['); RawPutcD('C'); RawPutcD('V'); RawPutcD('W'); RawPutcD(']');
+            // RawTagHexD('a', static_cast<uint32_t>(acc));
+            // RawTagHexD('p', static_cast<uint32_t>(
+            //                     reinterpret_cast<uintptr_t>(
+            //                         &output_data[out_offset])));
+            // RawNewlineD();
           }
 
           output_data[out_offset] = static_cast<int8_t>(acc);
 
           if (batch == 0 && out_y == 0 && out_x == 0 && out_channel == 0) {
-            RawPutcD('['); RawPutcD('C'); RawPutcD('V'); RawPutcD('A'); RawPutcD(']');
-            RawTagHexD('v', static_cast<uint32_t>(
-                                static_cast<uint8_t>(
-                                    output_data[out_offset])));
-            RawNewlineD();
+            // RawPutcD('['); RawPutcD('C'); RawPutcD('V'); RawPutcD('A'); RawPutcD(']');
+            // RawTagHexD('v', static_cast<uint32_t>(
+            //                     static_cast<uint8_t>(
+            //                         output_data[out_offset])));
+            // RawNewlineD();
           }
 
           // output_data[Offset(output_shape, batch, out_y, out_x, out_channel)] =

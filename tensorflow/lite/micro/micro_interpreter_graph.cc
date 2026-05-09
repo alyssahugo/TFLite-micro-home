@@ -734,9 +734,16 @@ TfLiteStatus MicroInterpreterGraph::InvokeSubgraph(int subgraph_idx) {
        ++current_operator_index_) {
 
     // constexpr uint32_t kDumpOpIndex = 0x1C;
-    // const bool dump_this_op = (current_operator_index_ == kDumpOpIndex);
     const bool dump_this_op = true;
-
+    // constexpr uint32_t kDumpOpIndex = 0x00;
+    // const bool dump_this_op = (current_operator_index_ == kDumpOpIndex);
+      // const bool dump_this_op =
+      //     (current_operator_index_ == 0x00) ||
+      //     (current_operator_index_ == 0x01) ||
+      //     (current_operator_index_ == 0x02) ||
+      //     (current_operator_index_ == 0x1C) ||
+      //     (current_operator_index_ == 0x1D) ||
+      //     (current_operator_index_ == 0x1E);
     
     RawPutc('['); RawPutc('O'); RawPutc('P'); RawPutc('0'); RawPutc(']');
     RawTagHex('i', static_cast<uint32_t>(current_operator_index_));
@@ -881,6 +888,30 @@ TfLiteStatus MicroInterpreterGraph::InvokeSubgraph(int subgraph_idx) {
       }
     }
     invoke_status = registration->invoke(context_, node);
+
+    if (current_operator_index_ == 0x1D && invoke_status == kTfLiteOk) {
+      int in_tensor_index = node->inputs->data[0];
+      int out_tensor_index = node->outputs->data[0];
+
+      TfLiteEvalTensor* in_eval =
+          &subgraph_allocations_[subgraph_idx].tensors[in_tensor_index];
+
+      TfLiteEvalTensor* out_eval =
+          &subgraph_allocations_[subgraph_idx].tensors[out_tensor_index];
+
+      RawPutc('['); RawPutc('R'); RawPutc('S'); RawPutc('H'); RawPutc(']');
+      RawTagHex('i', static_cast<uint32_t>(
+                    reinterpret_cast<uintptr_t>(in_eval->data.int8)));
+      RawTagHex('o', static_cast<uint32_t>(
+                    reinterpret_cast<uintptr_t>(out_eval->data.int8)));
+      RawNewline();
+
+      out_eval->data.int8[0] = in_eval->data.int8[0];
+      out_eval->data.int8[1] = in_eval->data.int8[1];
+
+      RawDumpEvalTensorBytes("RX", current_operator_index_,
+                            out_tensor_index, out_eval, 16);
+    }
 
     RawPutc('['); RawPutc('O'); RawPutc('P'); RawPutc('4'); RawPutc(']');
     RawTagHex('i', static_cast<uint32_t>(current_operator_index_));

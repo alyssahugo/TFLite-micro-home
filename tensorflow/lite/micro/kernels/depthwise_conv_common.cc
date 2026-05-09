@@ -64,6 +64,64 @@ static inline void RawTagHex(char tag, uint32_t v) {
   RawPutc(' ');
 }
 
+// constexpr size_t kSpikeLogLineSizeA = 4096;
+// static char spike_log_lineA[kSpikeLogLineSize];
+// static size_t spike_log_posA = 0;
+
+// static inline void RawFlushLine() {
+//   spike_log_lineA[spike_log_posA] = '\0';
+//   MicroPrintf("%s", spike_log_lineA);
+
+//   spike_log_posA = 0;
+//   spike_log_lineA[0] = '\0';
+// }
+
+// static inline void RawPutc(char c) {
+//   if (c == '\r') {
+//     return;
+//   }
+
+//   if (c == '\n') {
+//     RawFlushLine();
+//     return;
+//   }
+
+//   if (spike_log_posA + 1 >= kSpikeLogLineSizeA) {
+//     RawFlushLine();
+//   }
+
+//   spike_log_lineA[spike_log_posA++] = c;
+//   spike_log_lineA[spike_log_posA] = '\0';
+// }
+
+// static inline void RawPuts(const char* s) {
+//   while (*s) {
+//     RawPutc(*s++);
+//   }
+// }
+
+// static inline void RawNewline() {
+//   RawFlushLine();
+// }
+
+// static inline void RawPutHexNibble(uint32_t v) {
+//   v &= 0xFu;
+//   RawPutc((v < 10u) ? static_cast<char>('0' + v)
+//                     : static_cast<char>('A' + (v - 10u)));
+// }
+
+// static inline void RawPutHex32(uint32_t v) {
+//   for (int shift = 28; shift >= 0; shift -= 4) {
+//     RawPutHexNibble(v >> shift);
+//   }
+// }
+
+// static inline void RawTagHex(char tag, uint32_t v) {
+//   RawPutc(tag);
+//   RawPutHex32(v);
+//   RawPutc(' ');
+// }
+
 namespace tflite {
 
 const int kDepthwiseConvInputTensor = 0;
@@ -127,26 +185,86 @@ TfLiteStatus CalculateOpDataDepthwiseConv(
   TF_LITE_ENSURE_EQ(context, node->outputs->size, 1);
 
   // Matching GetWindowedOutputSize in TensorFlow.
-  auto padding = params.padding;
-  data->padding = ComputePaddingHeightWidth(
-      params.stride_height, params.stride_width, params.dilation_height_factor,
-      params.dilation_width_factor, height, width, filter_height, filter_width,
-      padding, &out_height, &out_width);
-RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('W'); RawPutc('0'); RawPutc(']');
-RawNewline();
+//   auto padding = params.padding;
+//   data->padding = ComputePaddingHeightWidth(
+//       params.stride_height, params.stride_width, params.dilation_height_factor,
+//       params.dilation_width_factor, height, width, filter_height, filter_width,
+//       padding, &out_height, &out_width);
+
+    // Manual scalar padding calculation.
+    // This avoids relying on ComputePaddingHeightWidth() returning/copying
+    // a TfLitePaddingValues struct correctly on the FPGA build.
+
+    data->padding.height = 0;
+    data->padding.width = 0;
+    data->padding.height_offset = 0;
+    data->padding.width_offset = 0;
+
+    const int effective_filter_height =
+        (filter_height - 1) * params.dilation_height_factor + 1;
+    const int effective_filter_width =
+        (filter_width - 1) * params.dilation_width_factor + 1;
+
+    if (params.padding == kTfLitePaddingSame) {
+    int total_padding_height =
+        ((out_height - 1) * params.stride_height + effective_filter_height) -
+        height;
+
+    int total_padding_width =
+        ((out_width - 1) * params.stride_width + effective_filter_width) -
+        width;
+
+    if (total_padding_height < 0) {
+        total_padding_height = 0;
+    }
+
+    if (total_padding_width < 0) {
+        total_padding_width = 0;
+    }
+
+    data->padding.height = total_padding_height / 2;
+    data->padding.height_offset = total_padding_height % 2;
+
+    data->padding.width = total_padding_width / 2;
+    data->padding.width_offset = total_padding_width % 2;
+    } else {
+    // VALID or UNKNOWN fallback.
+    data->padding.height = 0;
+    data->padding.width = 0;
+    data->padding.height_offset = 0;
+    data->padding.width_offset = 0;
+    }
+
+    RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('P'); RawPutc(']');
+    RawTagHex('p', static_cast<uint32_t>(params.padding));
+    RawTagHex('h', static_cast<uint32_t>(height));
+    RawTagHex('w', static_cast<uint32_t>(width));
+    RawTagHex('f', static_cast<uint32_t>(filter_height));
+    RawTagHex('g', static_cast<uint32_t>(filter_width));
+    RawTagHex('H', static_cast<uint32_t>(out_height));
+    RawTagHex('W', static_cast<uint32_t>(out_width));
+    RawTagHex('s', static_cast<uint32_t>(params.stride_height));
+    RawTagHex('S', static_cast<uint32_t>(params.stride_width));
+    RawTagHex('d', static_cast<uint32_t>(params.dilation_height_factor));
+    RawTagHex('D', static_cast<uint32_t>(params.dilation_width_factor));
+    RawTagHex('P', static_cast<uint32_t>(data->padding.height));
+    RawTagHex('Q', static_cast<uint32_t>(data->padding.width));
+    RawNewline();
+// RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('W'); RawPutc('0'); RawPutc(']');
+// RawNewline();
 
   MicroContext* micro_context = GetMicroContext(context);
-RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('W'); RawPutc('1'); RawPutc(']');
-RawTagHex('m', static_cast<uint32_t>(
-                   reinterpret_cast<uintptr_t>(micro_context)));
-RawNewline();
+// RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('W'); RawPutc('1'); RawPutc(']');
+// RawTagHex('m', static_cast<uint32_t>(
+//                    reinterpret_cast<uintptr_t>(micro_context)));
+// RawNewline();
   TfLiteTensor* input =
       micro_context->AllocateTempInputTensor(node, kConvInputTensor);
 
-      RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('W'); RawPutc('2'); RawPutc(']');
-RawTagHex('i', static_cast<uint32_t>(
-                   reinterpret_cast<uintptr_t>(input)));
-RawNewline();
+//       RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('W'); RawPutc('2'); RawPutc(']');
+// RawTagHex('i', static_cast<uint32_t>(
+//                    reinterpret_cast<uintptr_t>(input)));
+// RawNewline();
   TF_LITE_ENSURE(context, input != nullptr);
 //   TfLiteTensor* filter =
 //       micro_context->AllocateTempInputTensor(node, kConvWeightsTensor);
@@ -165,28 +283,28 @@ RawNewline();
 TfLiteTensor* filter =
     micro_context->AllocateTempInputTensor(node, kConvWeightsTensor);
 
-RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('W'); RawPutc('3'); RawPutc(']');
-RawTagHex('f', static_cast<uint32_t>(
-                   reinterpret_cast<uintptr_t>(filter)));
-RawNewline();
+// RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('W'); RawPutc('3'); RawPutc(']');
+// RawTagHex('f', static_cast<uint32_t>(
+//                    reinterpret_cast<uintptr_t>(filter)));
+// RawNewline();
 
 TF_LITE_ENSURE(context, filter != nullptr);
 
 TfLiteTensor* bias =
     micro_context->AllocateTempInputTensor(node, kConvBiasTensor);
 
-RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('W'); RawPutc('4'); RawPutc(']');
-RawTagHex('b', static_cast<uint32_t>(
-                   reinterpret_cast<uintptr_t>(bias)));
-RawNewline();
+// RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('W'); RawPutc('4'); RawPutc(']');
+// RawTagHex('b', static_cast<uint32_t>(
+//                    reinterpret_cast<uintptr_t>(bias)));
+// RawNewline();
 
 TfLiteTensor* output =
     micro_context->AllocateTempOutputTensor(node, kConvOutputTensor);
 
-RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('W'); RawPutc('5'); RawPutc(']');
-RawTagHex('o', static_cast<uint32_t>(
-                   reinterpret_cast<uintptr_t>(output)));
-RawNewline();
+// RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('W'); RawPutc('5'); RawPutc(']');
+// RawTagHex('o', static_cast<uint32_t>(
+//                    reinterpret_cast<uintptr_t>(output)));
+// RawNewline();
 
 TF_LITE_ENSURE(context, output != nullptr);
 
@@ -203,9 +321,9 @@ TF_LITE_ENSURE(context, output != nullptr);
     //     output_channels));
 
 
-    RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('W'); RawPutc('6'); RawPutc(']');
-    RawTagHex('c', static_cast<uint32_t>(output_channels));
-    RawNewline();
+    // RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('W'); RawPutc('6'); RawPutc(']');
+    // RawTagHex('c', static_cast<uint32_t>(output_channels));
+    // RawNewline();
 
     TfLiteStatus quant_status = tflite::PopulateConvolutionQuantizationParams(
         context, input, filter, bias, output, params.activation,
@@ -214,9 +332,9 @@ TF_LITE_ENSURE(context, output != nullptr);
         data->per_channel_output_multiplier, data->per_channel_output_shift,
         output_channels);
 
-    RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('7'); RawPutc(']');
-    RawTagHex('s', static_cast<uint32_t>(quant_status));
-    RawNewline();
+    // RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('7'); RawPutc(']');
+    // RawTagHex('s', static_cast<uint32_t>(quant_status));
+    // RawNewline();
 
     TF_LITE_ENSURE_STATUS(quant_status);
   }
@@ -234,30 +352,30 @@ TF_LITE_ENSURE(context, output != nullptr);
 
 //   return kTfLiteOk;
 
-    RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('W'); RawPutc('8'); RawPutc(']');
-    RawNewline();
+    // RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('W'); RawPutc('8'); RawPutc(']');
+    // RawNewline();
 
     micro_context->DeallocateTempTfLiteTensor(input);
 
-    RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('W'); RawPutc('9'); RawPutc(']');
-    RawNewline();
+    // RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('W'); RawPutc('9'); RawPutc(']');
+    // RawNewline();
 
     micro_context->DeallocateTempTfLiteTensor(filter);
 
-    RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('A'); RawPutc(']');
-    RawNewline();
+    // RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('A'); RawPutc(']');
+    // RawNewline();
 
     if (has_bias) {
     micro_context->DeallocateTempTfLiteTensor(bias);
     }
 
-    RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('B'); RawPutc(']');
-    RawNewline();
+    // RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('B'); RawPutc(']');
+    // RawNewline();
 
     micro_context->DeallocateTempTfLiteTensor(output);
 
-    RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('C'); RawPutc(']');
-    RawNewline();
+    // RawPutc('['); RawPutc('C'); RawPutc('D'); RawPutc('C'); RawPutc(']');
+    // RawNewline();
 
     return kTfLiteOk;
 
@@ -339,19 +457,19 @@ TfLiteStatus DepthwiseConvPrepare(TfLiteContext* context, TfLiteNode* node) {
 //       context, node, params, input_width, input_height, filter_width,
 //       filter_height, output_width, output_height, input->type, data));
 
-    RawPutc('['); RawPutc('D'); RawPutc('P'); RawPutc('B'); RawPutc(']');
-    RawTagHex('i', static_cast<uint32_t>(input->type));
-    RawTagHex('f', static_cast<uint32_t>(filter->type));
-    RawTagHex('o', static_cast<uint32_t>(output->type));
-    RawNewline();
+    // RawPutc('['); RawPutc('D'); RawPutc('P'); RawPutc('B'); RawPutc(']');
+    // RawTagHex('i', static_cast<uint32_t>(input->type));
+    // RawTagHex('f', static_cast<uint32_t>(filter->type));
+    // RawTagHex('o', static_cast<uint32_t>(output->type));
+    // RawNewline();
 
     TfLiteStatus calc_status = CalculateOpDataDepthwiseConv(
         context, node, params, input_width, input_height, filter_width,
         filter_height, output_width, output_height, input->type, data);
 
-    RawPutc('['); RawPutc('D'); RawPutc('P'); RawPutc('C'); RawPutc(']');
-    RawTagHex('s', static_cast<uint32_t>(calc_status));
-    RawNewline();
+    // RawPutc('['); RawPutc('D'); RawPutc('P'); RawPutc('C'); RawPutc(']');
+    // RawTagHex('s', static_cast<uint32_t>(calc_status));
+    // RawNewline();
 
     TF_LITE_ENSURE_STATUS(calc_status);
 
@@ -378,23 +496,23 @@ TfLiteStatus DepthwiseConvPrepare(TfLiteContext* context, TfLiteNode* node) {
 
 //   return kTfLiteOk;
 
-RawPutc('['); RawPutc('D'); RawPutc('P'); RawPutc('D'); RawPutc(']');
-RawNewline();
+// RawPutc('['); RawPutc('D'); RawPutc('P'); RawPutc('D'); RawPutc(']');
+// RawNewline();
 
 micro_context->DeallocateTempTfLiteTensor(output);
 
-RawPutc('['); RawPutc('D'); RawPutc('P'); RawPutc('E'); RawPutc(']');
-RawNewline();
+// RawPutc('['); RawPutc('D'); RawPutc('P'); RawPutc('E'); RawPutc(']');
+// RawNewline();
 
 micro_context->DeallocateTempTfLiteTensor(input);
 
-RawPutc('['); RawPutc('D'); RawPutc('P'); RawPutc('F'); RawPutc(']');
-RawNewline();
+// RawPutc('['); RawPutc('D'); RawPutc('P'); RawPutc('F'); RawPutc(']');
+// RawNewline();
 
 micro_context->DeallocateTempTfLiteTensor(filter);
 
-RawPutc('['); RawPutc('D'); RawPutc('P'); RawPutc('G'); RawPutc(']');
-RawNewline();
+// RawPutc('['); RawPutc('D'); RawPutc('P'); RawPutc('G'); RawPutc(']');
+// RawNewline();
 
 return kTfLiteOk;
 
