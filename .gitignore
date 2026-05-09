@@ -13,3 +13,7 @@ gen
 
 # Ignore the `external` symlink added by `bazel-compile-commands-extractor`
 /external
+
+
+# Windows downloaded-file metadata
+*:Zone.Identifier
