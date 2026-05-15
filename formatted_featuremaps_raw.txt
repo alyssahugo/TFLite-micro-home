@@ -1,0 +1,651 @@
+================================================================================
+Layer 0: UnknownOp
+================================================================================
+
+Input Feature Map:
+Tensor index: 88
+Shape: 1x96x96x1
+Bytes expected: 9216
+Bytes parsed: 0
+WARNING: expected 9216 bytes but parsed 0 bytes
+Hex bytes:
+
+Output Feature Map:
+Tensor index: 34
+Shape: 1x48x48x8
+Bytes expected: 18432
+Bytes parsed: 0
+WARNING: expected 18432 bytes but parsed 0 bytes
+Hex bytes:
+
+
+================================================================================
+Layer 1: UnknownOp
+================================================================================
+
+Input Feature Map:
+Tensor index: 34
+Shape: 1x48x48x8
+Bytes expected: 18432
+Bytes parsed: 0
+WARNING: expected 18432 bytes but parsed 0 bytes
+Hex bytes:
+
+Output Feature Map:
+Tensor index: 51
+Shape: 1x48x48x8
+Bytes expected: 18432
+Bytes parsed: 0
+WARNING: expected 18432 bytes but parsed 0 bytes
+Hex bytes:
+
+
+================================================================================
+Layer 2: UnknownOp
+================================================================================
+
+Input Feature Map:
+Tensor index: 51
+Shape: 1x48x48x8
+Bytes expected: 18432
+Bytes parsed: 0
+WARNING: expected 18432 bytes but parsed 0 bytes
+Hex bytes:
+
+Output Feature Map:
+Tensor index: 54
+Shape: 1x48x48x16
+Bytes expected: 36864
+Bytes parsed: 0
+WARNING: expected 36864 bytes but parsed 0 bytes
+Hex bytes:
+
+
+================================================================================
+Layer 3: UnknownOp
+================================================================================
+
+Input Feature Map:
+Tensor index: 54
+Shape: 1x48x48x16
+Bytes expected: 36864
+Bytes parsed: 0
+WARNING: expected 36864 bytes but parsed 0 bytes
+Hex bytes:
+
+Output Feature Map:
+Tensor index: 55
+Shape: 1x24x24x16
+Bytes expected: 9216
+Bytes parsed: 0
+WARNING: expected 9216 bytes but parsed 0 bytes
+Hex bytes:
+
+
+================================================================================
+Layer 4: UnknownOp
+================================================================================
+
+Input Feature Map:
+Tensor index: 55
+Shape: 1x24x24x16
+Bytes expected: 9216
+Bytes parsed: 0
+WARNING: expected 9216 bytes but parsed 0 bytes
+Hex bytes:
+
+Output Feature Map:
+Tensor index: 58
+Shape: 1x24x24x32
+Bytes expected: 18432
+Bytes parsed: 0
+WARNING: expected 18432 bytes but parsed 0 bytes
+Hex bytes:
+
+
+================================================================================
+Layer 5: UnknownOp
+================================================================================
+
+Input Feature Map:
+Tensor index: 58
+Shape: 1x24x24x32
+Bytes expected: 18432
+Bytes parsed: 0
+WARNING: expected 18432 bytes but parsed 0 bytes
+Hex bytes:
+
+Output Feature Map:
+Tensor index: 59
+Shape: 1x24x24x32
+Bytes expected: 18432
+Bytes parsed: 0
+WARNING: expected 18432 bytes but parsed 0 bytes
+Hex bytes:
+
+
+================================================================================
+Layer 6: UnknownOp
+================================================================================
+
+Input Feature Map:
+Tensor index: 59
+Shape: 1x24x24x32
+Bytes expected: 18432
+Bytes parsed: 0
+WARNING: expected 18432 bytes but parsed 0 bytes
+Hex bytes:
+
+Output Feature Map:
+Tensor index: 62
+Shape: 1x24x24x32
+Bytes expected: 18432
+Bytes parsed: 0
+WARNING: expected 18432 bytes but parsed 0 bytes
+Hex bytes:
+
+
+================================================================================
+Layer 7: UnknownOp
+================================================================================
+
+Input Feature Map:
+Tensor index: 62
+Shape: 1x24x24x32
+Bytes expected: 18432
+Bytes parsed: 0
+WARNING: expected 18432 bytes but parsed 0 bytes
+Hex bytes:
+
+Output Feature Map:
+Tensor index: 63
+Shape: 1x12x12x32
+Bytes expected: 4608
+Bytes parsed: 0
+WARNING: expected 4608 bytes but parsed 0 bytes
+Hex bytes:
+
+
+================================================================================
+Layer 8: UnknownOp
+================================================================================
+
+Input Feature Map:
+Tensor index: 63
+Shape: 1x12x12x32
+Bytes expected: 4608
+Bytes parsed: 0
+WARNING: expected 4608 bytes but parsed 0 bytes
+Hex bytes:
+
+Output Feature Map:
+Tensor index: 66
+Shape: 1x12x12x64
+Bytes expected: 9216
+Bytes parsed: 0
+WARNING: expected 9216 bytes but parsed 0 bytes
+Hex bytes:
+
+
+================================================================================
+Layer 9: UnknownOp
+================================================================================
+
+Input Feature Map:
+Tensor index: 66
+Shape: 1x12x12x64
+Bytes expected: 9216
+Bytes parsed: 0
+WARNING: expected 9216 bytes but parsed 0 bytes
+Hex bytes:
+
+Output Feature Map:
+Tensor index: 67
+Shape: 1x12x12x64
+Bytes expected: 9216
+Bytes parsed: 0
+WARNING: expected 9216 bytes but parsed 0 bytes
+Hex bytes:
+
+
+================================================================================
+Layer 10: UnknownOp
+================================================================================
+
+Input Feature Map:
+Tensor index: 67
+Shape: 1x12x12x64
+Bytes expected: 9216
+Bytes parsed: 0
+WARNING: expected 9216 bytes but parsed 0 bytes
+Hex bytes:
+
+Output Feature Map:
+Tensor index: 70
+Shape: 1x12x12x64
+Bytes expected: 9216
+Bytes parsed: 0
+WARNING: expected 9216 bytes but parsed 0 bytes
+Hex bytes:
+
+
+================================================================================
+Layer 11: UnknownOp
+================================================================================
+
+Input Feature Map:
+Tensor index: 70
+Shape: 1x12x12x64
+Bytes expected: 9216
+Bytes parsed: 0
+WARNING: expected 9216 bytes but parsed 0 bytes
+Hex bytes:
+
+Output Feature Map:
+Tensor index: 71
+Shape: 1x6x6x64
+Bytes expected: 2304
+Bytes parsed: 0
+WARNING: expected 2304 bytes but parsed 0 bytes
+Hex bytes:
+
+
+================================================================================
+Layer 12: UnknownOp
+================================================================================
+
+Input Feature Map:
+Tensor index: 71
+Shape: 1x6x6x64
+Bytes expected: 2304
+Bytes parsed: 0
+WARNING: expected 2304 bytes but parsed 0 bytes
+Hex bytes:
+
+Output Feature Map:
+Tensor index: 74
+Shape: 1x6x6x128
+Bytes expected: 4608
+Bytes parsed: 0
+WARNING: expected 4608 bytes but parsed 0 bytes
+Hex bytes:
+
+
+================================================================================
+Layer 13: UnknownOp
+================================================================================
+
+Input Feature Map:
+Tensor index: 74
+Shape: 1x6x6x128
+Bytes expected: 4608
+Bytes parsed: 0
+WARNING: expected 4608 bytes but parsed 0 bytes
+Hex bytes:
+
+Output Feature Map:
+Tensor index: 75
+Shape: 1x6x6x128
+Bytes expected: 4608
+Bytes parsed: 0
+WARNING: expected 4608 bytes but parsed 0 bytes
+Hex bytes:
+
+
+================================================================================
+Layer 14: UnknownOp
+================================================================================
+
+Input Feature Map:
+Tensor index: 75
+Shape: 1x6x6x128
+Bytes expected: 4608
+Bytes parsed: 0
+WARNING: expected 4608 bytes but parsed 0 bytes
+Hex bytes:
+
+Output Feature Map:
+Tensor index: 78
+Shape: 1x6x6x128
+Bytes expected: 4608
+Bytes parsed: 0
+WARNING: expected 4608 bytes but parsed 0 bytes
+Hex bytes:
+
+
+================================================================================
+Layer 15: UnknownOp
+================================================================================
+
+Input Feature Map:
+Tensor index: 78
+Shape: 1x6x6x128
+Bytes expected: 4608
+Bytes parsed: 0
+WARNING: expected 4608 bytes but parsed 0 bytes
+Hex bytes:
+
+Output Feature Map:
+Tensor index: 79
+Shape: 1x6x6x128
+Bytes expected: 4608
+Bytes parsed: 0
+WARNING: expected 4608 bytes but parsed 0 bytes
+Hex bytes:
+
+
+================================================================================
+Layer 16: UnknownOp
+================================================================================
+
+Input Feature Map:
+Tensor index: 79
+Shape: 1x6x6x128
+Bytes expected: 4608
+Bytes parsed: 0
+WARNING: expected 4608 bytes but parsed 0 bytes
+Hex bytes:
+
+Output Feature Map:
+Tensor index: 82
+Shape: 1x6x6x128
+Bytes expected: 4608
+Bytes parsed: 0
+WARNING: expected 4608 bytes but parsed 0 bytes
+Hex bytes:
+
+
+================================================================================
+Layer 17: UnknownOp
+================================================================================
+
+Input Feature Map:
+Tensor index: 82
+Shape: 1x6x6x128
+Bytes expected: 4608
+Bytes parsed: 0
+WARNING: expected 4608 bytes but parsed 0 bytes
+Hex bytes:
+
+Output Feature Map:
+Tensor index: 83
+Shape: 1x6x6x128
+Bytes expected: 4608
+Bytes parsed: 0
+WARNING: expected 4608 bytes but parsed 0 bytes
+Hex bytes:
+
+
+================================================================================
+Layer 18: UnknownOp
+================================================================================
+
+Input Feature Map:
+Tensor index: 83
+Shape: 1x6x6x128
+Bytes expected: 4608
+Bytes parsed: 0
+WARNING: expected 4608 bytes but parsed 0 bytes
+Hex bytes:
+
+Output Feature Map:
+Tensor index: 86
+Shape: 1x6x6x128
+Bytes expected: 4608
+Bytes parsed: 0
+WARNING: expected 4608 bytes but parsed 0 bytes
+Hex bytes:
+
+
+================================================================================
+Layer 19: UnknownOp
+================================================================================
+
+Input Feature Map:
+Tensor index: 86
+Shape: 1x6x6x128
+Bytes expected: 4608
+Bytes parsed: 0
+WARNING: expected 4608 bytes but parsed 0 bytes
+Hex bytes:
+
+Output Feature Map:
+Tensor index: 35
+Shape: 1x6x6x128
+Bytes expected: 4608
+Bytes parsed: 0
+WARNING: expected 4608 bytes but parsed 0 bytes
+Hex bytes:
+
+
+================================================================================
+Layer 20: UnknownOp
+================================================================================
+
+Input Feature Map:
+Tensor index: 35
+Shape: 1x6x6x128
+Bytes expected: 4608
+Bytes parsed: 0
+WARNING: expected 4608 bytes but parsed 0 bytes
+Hex bytes:
+
+Output Feature Map:
+Tensor index: 38
+Shape: 1x6x6x128
+Bytes expected: 4608
+Bytes parsed: 0
+WARNING: expected 4608 bytes but parsed 0 bytes
+Hex bytes:
+
+
+================================================================================
+Layer 21: UnknownOp
+================================================================================
+
+Input Feature Map:
+Tensor index: 38
+Shape: 1x6x6x128
+Bytes expected: 4608
+Bytes parsed: 0
+WARNING: expected 4608 bytes but parsed 0 bytes
+Hex bytes:
+
+Output Feature Map:
+Tensor index: 39
+Shape: 1x6x6x128
+Bytes expected: 4608
+Bytes parsed: 0
+WARNING: expected 4608 bytes but parsed 0 bytes
+Hex bytes:
+
+
+================================================================================
+Layer 22: UnknownOp
+================================================================================
+
+Input Feature Map:
+Tensor index: 39
+Shape: 1x6x6x128
+Bytes expected: 4608
+Bytes parsed: 0
+WARNING: expected 4608 bytes but parsed 0 bytes
+Hex bytes:
+
+Output Feature Map:
+Tensor index: 42
+Shape: 1x6x6x128
+Bytes expected: 4608
+Bytes parsed: 0
+WARNING: expected 4608 bytes but parsed 0 bytes
+Hex bytes:
+
+
+================================================================================
+Layer 23: UnknownOp
+================================================================================
+
+Input Feature Map:
+Tensor index: 42
+Shape: 1x6x6x128
+Bytes expected: 4608
+Bytes parsed: 0
+WARNING: expected 4608 bytes but parsed 0 bytes
+Hex bytes:
+
+Output Feature Map:
+Tensor index: 43
+Shape: 1x3x3x128
+Bytes expected: 1152
+Bytes parsed: 0
+WARNING: expected 1152 bytes but parsed 0 bytes
+Hex bytes:
+
+
+================================================================================
+Layer 24: UnknownOp
+================================================================================
+
+Input Feature Map:
+Tensor index: 43
+Shape: 1x3x3x128
+Bytes expected: 1152
+Bytes parsed: 0
+WARNING: expected 1152 bytes but parsed 0 bytes
+Hex bytes:
+
+Output Feature Map:
+Tensor index: 46
+Shape: 1x3x3x256
+Bytes expected: 2304
+Bytes parsed: 0
+WARNING: expected 2304 bytes but parsed 0 bytes
+Hex bytes:
+
+
+================================================================================
+Layer 25: UnknownOp
+================================================================================
+
+Input Feature Map:
+Tensor index: 46
+Shape: 1x3x3x256
+Bytes expected: 2304
+Bytes parsed: 0
+WARNING: expected 2304 bytes but parsed 0 bytes
+Hex bytes:
+
+Output Feature Map:
+Tensor index: 47
+Shape: 1x3x3x256
+Bytes expected: 2304
+Bytes parsed: 0
+WARNING: expected 2304 bytes but parsed 0 bytes
+Hex bytes:
+
+
+================================================================================
+Layer 26: UnknownOp
+================================================================================
+
+Input Feature Map:
+Tensor index: 47
+Shape: 1x3x3x256
+Bytes expected: 2304
+Bytes parsed: 0
+WARNING: expected 2304 bytes but parsed 0 bytes
+Hex bytes:
+
+Output Feature Map:
+Tensor index: 50
+Shape: 1x3x3x256
+Bytes expected: 2304
+Bytes parsed: 0
+WARNING: expected 2304 bytes but parsed 0 bytes
+Hex bytes:
+
+
+================================================================================
+Layer 27: UnknownOp
+================================================================================
+
+Input Feature Map:
+Tensor index: 50
+Shape: 1x3x3x256
+Bytes expected: 2304
+Bytes parsed: 0
+WARNING: expected 2304 bytes but parsed 0 bytes
+Hex bytes:
+
+Output Feature Map:
+Tensor index: 27
+Shape: 1x1x1x256
+Bytes expected: 256
+Bytes parsed: 0
+WARNING: expected 256 bytes but parsed 0 bytes
+Hex bytes:
+
+
+================================================================================
+Layer 28: UnknownOp
+================================================================================
+
+Input Feature Map:
+Tensor index: 27
+Shape: 1x1x1x256
+Bytes expected: 256
+Bytes parsed: 0
+WARNING: expected 256 bytes but parsed 0 bytes
+Hex bytes:
+
+Output Feature Map:
+Tensor index: 28
+Shape: 1x1x1x2
+Bytes expected: 2
+Bytes parsed: 0
+WARNING: expected 2 bytes but parsed 0 bytes
+Hex bytes:
+
+
+================================================================================
+Layer 29: UnknownOp
+================================================================================
+
+Input Feature Map:
+Tensor index: 28
+Shape: 1x1x1x2
+Bytes expected: 2
+Bytes parsed: 0
+WARNING: expected 2 bytes but parsed 0 bytes
+Hex bytes:
+
+Output Feature Map:
+Tensor index: 31
+Shape: 1x2
+Bytes expected: 2
+Bytes parsed: 0
+WARNING: expected 2 bytes but parsed 0 bytes
+Hex bytes:
+
+
+================================================================================
+Layer 30: UnknownOp
+================================================================================
+
+Input Feature Map:
+Tensor index: 31
+Shape: 1x2
+Bytes expected: 2
+Bytes parsed: 0
+WARNING: expected 2 bytes but parsed 0 bytes
+Hex bytes:
+
+Output Feature Map:
+Tensor index: 87
+Shape: 1x2
+Bytes expected: 2
+Bytes parsed: 0
+WARNING: expected 2 bytes but parsed 0 bytes
+Hex bytes:
+
+

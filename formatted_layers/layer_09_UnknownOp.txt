@@ -1,0 +1,19 @@
+Layer 9: UnknownOp
+================================================================================
+
+Input Feature Map:
+Tensor index: 66
+Shape: 1x12x12x64
+Bytes expected: 9216
+Bytes parsed: 0
+WARNING: expected 9216 bytes but parsed 0 bytes
+Hex bytes:
+
+Output Feature Map:
+Tensor index: 67
+Shape: 1x12x12x64
+Bytes expected: 9216
+Bytes parsed: 0
+WARNING: expected 9216 bytes but parsed 0 bytes
+Hex bytes:
+

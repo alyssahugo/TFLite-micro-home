@@ -1129,6 +1129,11 @@ void setup() {
   RawTagHex('i', static_cast<uint32_t>(reinterpret_cast<uintptr_t>(interpreter)));
   RawNewline();
 
+  RawTagHex('A', *reinterpret_cast<volatile uint32_t*>(0x80000000));
+  RawTagHex('B', *reinterpret_cast<volatile uint32_t*>(0x8005301C));
+  RawTagHex('C', *reinterpret_cast<volatile uint32_t*>(0x80053D00));
+  RawTagHex('D', *reinterpret_cast<volatile uint32_t*>(0x800546EC));
+
   TfLiteStatus alloc_status = interpreter->AllocateTensors();
 
   RawPutc('['); RawPutc('A'); RawPutc('T'); RawPutc('1'); RawPutc(']');

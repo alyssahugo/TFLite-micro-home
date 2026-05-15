@@ -1,0 +1,18 @@
+====================================================================================================
+Layer 30: Softmax
+====================================================================================================
+
+Input Feature Map:
+Tensor index: 31
+Shape: 1x2
+Bytes expected: 2
+Bytes parsed: 2
+Hex bytes:
+90 6E
+Output Feature Map:
+Tensor index: 87
+Shape: 1x2
+Bytes expected: 2
+Bytes parsed: 2
+Hex bytes:
+8F 71

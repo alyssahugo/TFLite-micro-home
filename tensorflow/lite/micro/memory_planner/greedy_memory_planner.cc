@@ -443,11 +443,11 @@ void GreedyMemoryPlanner::CalculateOffsetsIfNeeded() {
 
   first_entry->offset = buffer_offsets_[buffer_id];
 
-  RawPutc('['); RawPutc('G'); RawPutc('C'); RawPutc('6'); RawPutc(']');
-  RawTagHex('o', static_cast<uint32_t>(first_entry->offset));
-  RawTagHex('r', static_cast<uint32_t>(first_entry->requirements_index));
-  RawTagHex('x', static_cast<uint32_t>(first_entry->next_entry_index));
-  RawNewline();
+  // RawPutc('['); RawPutc('G'); RawPutc('C'); RawPutc('6'); RawPutc(']');
+  // RawTagHex('o', static_cast<uint32_t>(first_entry->offset));
+  // RawTagHex('r', static_cast<uint32_t>(first_entry->requirements_index));
+  // RawTagHex('x', static_cast<uint32_t>(first_entry->next_entry_index));
+  // RawNewline();
 
   for (int i = 1; i < buffer_count_; ++i) {
     buffer_id = buffer_ids_sorted_[i];
@@ -457,14 +457,14 @@ void GreedyMemoryPlanner::CalculateOffsetsIfNeeded() {
     const int wanted_first_time_used = wanted_requirements->first_time_used;
     const int wanted_last_time_used = wanted_requirements->last_time_used;
 
-    RawPutc('['); RawPutc('G'); RawPutc('C'); RawPutc('B'); RawPutc(']');
-    RawTagHex('i', static_cast<uint32_t>(i));
-    RawTagHex('b', static_cast<uint32_t>(buffer_id));
-    RawTagHex('s', static_cast<uint32_t>(wanted_size));
-    RawTagHex('f', static_cast<uint32_t>(wanted_first_time_used));
-    RawTagHex('l', static_cast<uint32_t>(wanted_last_time_used));
-    RawTagHex('o', static_cast<uint32_t>(wanted_requirements->offline_offset));
-    RawNewline();
+    // RawPutc('['); RawPutc('G'); RawPutc('C'); RawPutc('B'); RawPutc(']');
+    // RawTagHex('i', static_cast<uint32_t>(i));
+    // RawTagHex('b', static_cast<uint32_t>(buffer_id));
+    // RawTagHex('s', static_cast<uint32_t>(wanted_size));
+    // RawTagHex('f', static_cast<uint32_t>(wanted_first_time_used));
+    // RawTagHex('l', static_cast<uint32_t>(wanted_last_time_used));
+    // RawTagHex('o', static_cast<uint32_t>(wanted_requirements->offline_offset));
+    // RawNewline();
 
     int candidate_offset = 0;
 
@@ -483,13 +483,13 @@ void GreedyMemoryPlanner::CalculateOffsetsIfNeeded() {
           break;
         }
 
-        RawPutc('['); RawPutc('G'); RawPutc('C'); RawPutc('C'); RawPutc(']');
-        RawTagHex('i', static_cast<uint32_t>(i));
-        RawTagHex('g', static_cast<uint32_t>(guard_a));
-        RawTagHex('p', static_cast<uint32_t>(
-                           reinterpret_cast<uintptr_t>(prior_entry)));
-        RawTagHex('c', static_cast<uint32_t>(candidate_offset));
-        RawNewline();
+        // RawPutc('['); RawPutc('G'); RawPutc('C'); RawPutc('C'); RawPutc(']');
+        // RawTagHex('i', static_cast<uint32_t>(i));
+        // RawTagHex('g', static_cast<uint32_t>(guard_a));
+        // RawTagHex('p', static_cast<uint32_t>(
+        //                    reinterpret_cast<uintptr_t>(prior_entry)));
+        // RawTagHex('c', static_cast<uint32_t>(candidate_offset));
+        // RawNewline();
 
         ListEntry* next_entry = NextSimultaneouslyActiveBuffer(
             prior_entry, wanted_first_time_used, wanted_last_time_used);
@@ -538,11 +538,11 @@ void GreedyMemoryPlanner::CalculateOffsetsIfNeeded() {
       candidate_offset = wanted_requirements->offline_offset;
     }
 
-    RawPutc('['); RawPutc('G'); RawPutc('C'); RawPutc('7'); RawPutc(']');
-    RawTagHex('i', static_cast<uint32_t>(i));
-    RawTagHex('b', static_cast<uint32_t>(buffer_id));
-    RawTagHex('c', static_cast<uint32_t>(candidate_offset));
-    RawNewline();
+    // RawPutc('['); RawPutc('G'); RawPutc('C'); RawPutc('7'); RawPutc(']');
+    // RawTagHex('i', static_cast<uint32_t>(i));
+    // RawTagHex('b', static_cast<uint32_t>(buffer_id));
+    // RawTagHex('c', static_cast<uint32_t>(candidate_offset));
+    // RawNewline();
 
     buffer_offsets_[buffer_id] = candidate_offset;
 
@@ -565,10 +565,10 @@ void GreedyMemoryPlanner::CalculateOffsetsIfNeeded() {
       first_entry = new_entry;
       first_entry_index_ = new_entry_index;
 
-      RawPutc('['); RawPutc('G'); RawPutc('C'); RawPutc('9'); RawPutc(']');
-      RawTagHex('f', static_cast<uint32_t>(first_entry_index_));
-      RawTagHex('x', static_cast<uint32_t>(new_entry->next_entry_index));
-      RawNewline();
+      // RawPutc('['); RawPutc('G'); RawPutc('C'); RawPutc('9'); RawPutc(']');
+      // RawTagHex('f', static_cast<uint32_t>(first_entry_index_));
+      // RawTagHex('x', static_cast<uint32_t>(new_entry->next_entry_index));
+      // RawNewline();
     } else {
       ListEntry* current_entry = first_entry;
 

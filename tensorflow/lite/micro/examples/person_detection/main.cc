@@ -631,7 +631,7 @@
 //   }
 
 //   return 0;
-// }
+
 
 #include "tensorflow/lite/micro/examples/person_detection/main_functions.h"
 
@@ -650,6 +650,12 @@ extern "C" int main(void) {
   setup();
   loop();   // run exactly once
   loop();   // run exactly once
+  loop();   // run exactly once  
+  // loop();   // run exactly once
+  // loop();   // run exactly once
+  // loop();   // run exactly once
+  // loop();   // run exactly once
+  // loop();   // run exactly once
   // while (1) {}
   return 0;
 }

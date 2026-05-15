@@ -43,7 +43,10 @@ $(person_detection_MODEL_HDRS)
 person_detection_GENERATOR_INPUTS := \
 $(TENSORFLOW_ROOT)tensorflow/lite/micro/models/person_detect.tflite \
 $(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/person_detection/testdata/person.bmp \
-$(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/person_detection/testdata/no_person.bmp
+$(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/person_detection/testdata/no_person.bmp \
+$(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/person_detection/testdata/image_3.bmp \
+$(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/person_detection/testdata/image_4.bmp \
+$(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/person_detection/testdata/image_5.bmp
 
 person_detection_GENERATED_SRCS := \
 $(GENERATED_SRCS_DIR)$(TENSORFLOW_ROOT)tensorflow/lite/micro/models/person_detect_model_data.cc

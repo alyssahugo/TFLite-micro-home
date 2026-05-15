@@ -1,0 +1,19 @@
+Layer 4: UnknownOp
+================================================================================
+
+Input Feature Map:
+Tensor index: 55
+Shape: 1x24x24x16
+Bytes expected: 9216
+Bytes parsed: 0
+WARNING: expected 9216 bytes but parsed 0 bytes
+Hex bytes:
+
+Output Feature Map:
+Tensor index: 58
+Shape: 1x24x24x32
+Bytes expected: 18432
+Bytes parsed: 0
+WARNING: expected 18432 bytes but parsed 0 bytes
+Hex bytes:
+

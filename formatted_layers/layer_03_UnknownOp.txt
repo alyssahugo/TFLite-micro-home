@@ -1,0 +1,19 @@
+Layer 3: UnknownOp
+================================================================================
+
+Input Feature Map:
+Tensor index: 54
+Shape: 1x48x48x16
+Bytes expected: 36864
+Bytes parsed: 0
+WARNING: expected 36864 bytes but parsed 0 bytes
+Hex bytes:
+
+Output Feature Map:
+Tensor index: 55
+Shape: 1x24x24x16
+Bytes expected: 9216
+Bytes parsed: 0
+WARNING: expected 9216 bytes but parsed 0 bytes
+Hex bytes:
+

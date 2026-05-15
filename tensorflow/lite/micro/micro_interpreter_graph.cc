@@ -733,10 +733,10 @@ TfLiteStatus MicroInterpreterGraph::InvokeSubgraph(int subgraph_idx) {
   for (current_operator_index_ = 0; current_operator_index_ < operators_size;
        ++current_operator_index_) {
 
-    // constexpr uint32_t kDumpOpIndex = 0x1C;
-    const bool dump_this_op = true;
+    constexpr uint32_t kDumpOpIndex = 0x00;
+    // const bool dump_this_op = true;
     // constexpr uint32_t kDumpOpIndex = 0x00;
-    // const bool dump_this_op = (current_operator_index_ == kDumpOpIndex);
+    const bool dump_this_op = (current_operator_index_ == kDumpOpIndex);
       // const bool dump_this_op =
       //     (current_operator_index_ == 0x00) ||
       //     (current_operator_index_ == 0x01) ||

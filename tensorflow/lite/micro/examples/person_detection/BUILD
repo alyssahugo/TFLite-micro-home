@@ -49,6 +49,43 @@ generate_cc_arrays(
     out = "testdata/person_image_data.h",
 )
 
+generate_cc_arrays(
+    name = "generated_image_3_bmp_cc",
+    src = "testdata/image_3.bmp",
+    out = "testdata/image_3_image_data.cc",
+)
+
+generate_cc_arrays(
+    name = "generated_image_3_bmp_hdr",
+    src = "testdata/image_3.bmp",
+    out = "testdata/image_3_image_data.h",
+)
+
+generate_cc_arrays(
+    name = "generated_image_4_bmp_cc",
+    src = "testdata/image_4.bmp",
+    out = "testdata/image_4_image_data.cc",
+)
+
+generate_cc_arrays(
+    name = "generated_image_4_bmp_hdr",
+    src = "testdata/image_4.bmp",
+    out = "testdata/image_4_image_data.h",
+)
+
+generate_cc_arrays(
+    name = "generated_image_5_bmp_cc",
+    src = "testdata/image_5.bmp",
+    out = "testdata/image_5_image_data.cc",
+)
+
+generate_cc_arrays(
+    name = "generated_image_5_bmp_hdr",
+    src = "testdata/image_5.bmp",
+    out = "testdata/image_5_image_data.h",
+)
+
+
 tflm_cc_library(
     name = "person_detect_model_data",
     srcs = [
@@ -64,10 +101,16 @@ tflm_cc_library(
     srcs = [
         ":generated_no_person_bmp_cc",
         ":generated_person_bmp_cc",
+        ":generated_image_3_bmp_cc",
+        ":generated_image_4_bmp_cc",
+        ":generated_image_5_bmp_cc",
     ],
     hdrs = [
         ":generated_no_person_bmp_hdr",
         ":generated_person_bmp_hdr",
+        ":generated_image_3_bmp_hdr",
+        ":generated_image_4_bmp_hdr",
+        ":generated_image_5_bmp_hdr",
     ],
     deps = [
         ":model_settings",

@@ -1,0 +1,19 @@
+Layer 28: UnknownOp
+================================================================================
+
+Input Feature Map:
+Tensor index: 27
+Shape: 1x1x1x256
+Bytes expected: 256
+Bytes parsed: 0
+WARNING: expected 256 bytes but parsed 0 bytes
+Hex bytes:
+
+Output Feature Map:
+Tensor index: 28
+Shape: 1x1x1x2
+Bytes expected: 2
+Bytes parsed: 0
+WARNING: expected 2 bytes but parsed 0 bytes
+Hex bytes:
+

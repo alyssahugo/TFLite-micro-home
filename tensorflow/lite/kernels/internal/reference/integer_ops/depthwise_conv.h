@@ -680,40 +680,40 @@ inline void DepthwiseConvPerChannel(
 
   // Print one clean header only for OP01.
   if (this_dw_call == 1) {
-    RawPutcD('['); RawPutcD('D'); RawPutcD('H'); RawPutcD(']');
-    RawTagHexD('k', static_cast<uint32_t>(this_dw_call));
-    RawTagHexD('B', static_cast<uint32_t>(batches));
-    RawTagHexD('h', static_cast<uint32_t>(input_height));
-    RawTagHexD('w', static_cast<uint32_t>(input_width));
-    RawTagHexD('c', static_cast<uint32_t>(input_depth));
-    RawTagHexD('f', static_cast<uint32_t>(filter_height));
-    RawTagHexD('g', static_cast<uint32_t>(filter_width));
-    RawTagHexD('m', static_cast<uint32_t>(depth_multiplier));
-    RawTagHexD('H', static_cast<uint32_t>(output_height));
-    RawTagHexD('W', static_cast<uint32_t>(output_width));
-    RawTagHexD('C', static_cast<uint32_t>(output_depth));
-    RawTagHexD('i', static_cast<uint32_t>(
-                       reinterpret_cast<uintptr_t>(input_data)));
-    RawTagHexD('r', static_cast<uint32_t>(
-                       reinterpret_cast<uintptr_t>(filter_data)));
-    RawTagHexD('b', static_cast<uint32_t>(
-                       reinterpret_cast<uintptr_t>(bias_data)));
-    RawTagHexD('o', static_cast<uint32_t>(
-                       reinterpret_cast<uintptr_t>(output_data)));
-    RawNewlineD();
+    // RawPutcD('['); RawPutcD('D'); RawPutcD('H'); RawPutcD(']');
+    // RawTagHexD('k', static_cast<uint32_t>(this_dw_call));
+    // RawTagHexD('B', static_cast<uint32_t>(batches));
+    // RawTagHexD('h', static_cast<uint32_t>(input_height));
+    // RawTagHexD('w', static_cast<uint32_t>(input_width));
+    // RawTagHexD('c', static_cast<uint32_t>(input_depth));
+    // RawTagHexD('f', static_cast<uint32_t>(filter_height));
+    // RawTagHexD('g', static_cast<uint32_t>(filter_width));
+    // RawTagHexD('m', static_cast<uint32_t>(depth_multiplier));
+    // RawTagHexD('H', static_cast<uint32_t>(output_height));
+    // RawTagHexD('W', static_cast<uint32_t>(output_width));
+    // RawTagHexD('C', static_cast<uint32_t>(output_depth));
+    // RawTagHexD('i', static_cast<uint32_t>(
+    //                    reinterpret_cast<uintptr_t>(input_data)));
+    // RawTagHexD('r', static_cast<uint32_t>(
+    //                    reinterpret_cast<uintptr_t>(filter_data)));
+    // RawTagHexD('b', static_cast<uint32_t>(
+    //                    reinterpret_cast<uintptr_t>(bias_data)));
+    // RawTagHexD('o', static_cast<uint32_t>(
+    //                    reinterpret_cast<uintptr_t>(output_data)));
+    // RawNewlineD();
 
-    RawPutcD('['); RawPutcD('D'); RawPutcD('P'); RawPutcD(']');
-    RawTagHexD('s', static_cast<uint32_t>(stride_height));
-    RawTagHexD('S', static_cast<uint32_t>(stride_width));
-    RawTagHexD('p', static_cast<uint32_t>(pad_height));
-    RawTagHexD('P', static_cast<uint32_t>(pad_width));
-    RawTagHexD('d', static_cast<uint32_t>(dilation_height_factor));
-    RawTagHexD('D', static_cast<uint32_t>(dilation_width_factor));
-    RawTagHexD('I', static_cast<uint32_t>(input_offset));
-    RawTagHexD('O', static_cast<uint32_t>(output_offset));
-    RawTagHexD('n', static_cast<uint32_t>(output_activation_min));
-    RawTagHexD('x', static_cast<uint32_t>(output_activation_max));
-    RawNewlineD();
+    // RawPutcD('['); RawPutcD('D'); RawPutcD('P'); RawPutcD(']');
+    // RawTagHexD('s', static_cast<uint32_t>(stride_height));
+    // RawTagHexD('S', static_cast<uint32_t>(stride_width));
+    // RawTagHexD('p', static_cast<uint32_t>(pad_height));
+    // RawTagHexD('P', static_cast<uint32_t>(pad_width));
+    // RawTagHexD('d', static_cast<uint32_t>(dilation_height_factor));
+    // RawTagHexD('D', static_cast<uint32_t>(dilation_width_factor));
+    // RawTagHexD('I', static_cast<uint32_t>(input_offset));
+    // RawTagHexD('O', static_cast<uint32_t>(output_offset));
+    // RawTagHexD('n', static_cast<uint32_t>(output_activation_min));
+    // RawTagHexD('x', static_cast<uint32_t>(output_activation_max));
+    // RawNewlineD();
   }
 
   for (int batch = 0; batch < batches; ++batch) {
@@ -739,17 +739,17 @@ inline void DepthwiseConvPerChannel(
                  m == 0);
 
             if (dump_dw) {
-              RawPutcD('['); RawPutcD('D'); RawPutcD('0'); RawPutcD(']');
-              RawTagHexD('k', static_cast<uint32_t>(this_dw_call));
-              RawTagHexD('c', static_cast<uint32_t>(in_channel));
-              RawTagHexD('m', static_cast<uint32_t>(m));
-              RawTagHexD('o', static_cast<uint32_t>(output_channel));
-              RawTagHexD('y', static_cast<uint32_t>(out_y));
-              RawTagHexD('x', static_cast<uint32_t>(out_x));
-              RawTagHexD('X', static_cast<uint32_t>(in_x_origin));
-              RawTagHexD('Y', static_cast<uint32_t>(in_y_origin));
-              RawTagHexD('a', static_cast<uint32_t>(acc));
-              RawNewlineD();
+              // RawPutcD('['); RawPutcD('D'); RawPutcD('0'); RawPutcD(']');
+              // RawTagHexD('k', static_cast<uint32_t>(this_dw_call));
+              // RawTagHexD('c', static_cast<uint32_t>(in_channel));
+              // RawTagHexD('m', static_cast<uint32_t>(m));
+              // RawTagHexD('o', static_cast<uint32_t>(output_channel));
+              // RawTagHexD('y', static_cast<uint32_t>(out_y));
+              // RawTagHexD('x', static_cast<uint32_t>(out_x));
+              // RawTagHexD('X', static_cast<uint32_t>(in_x_origin));
+              // RawTagHexD('Y', static_cast<uint32_t>(in_y_origin));
+              // RawTagHexD('a', static_cast<uint32_t>(acc));
+              // RawNewlineD();
             }
 
             for (int filter_y = 0; filter_y < filter_height; ++filter_y) {
@@ -778,29 +778,29 @@ inline void DepthwiseConvPerChannel(
                   acc += product;
 
                   if (dump_dw) {
-                    RawPutcD('['); RawPutcD('D'); RawPutcD('1'); RawPutcD(']');
-                    RawTagHexD('f', static_cast<uint32_t>(filter_y));
-                    RawTagHexD('g', static_cast<uint32_t>(filter_x));
-                    RawTagHexD('y', static_cast<uint32_t>(in_y));
-                    RawTagHexD('x', static_cast<uint32_t>(in_x));
-                    RawTagHexD('I', static_cast<uint32_t>(input_offset_index));
-                    RawTagHexD('F', static_cast<uint32_t>(filter_offset_index));
-                    RawTagHexD('i', static_cast<uint32_t>(input_val));
-                    RawTagHexD('w', static_cast<uint32_t>(filter_val));
-                    RawTagHexD('z', static_cast<uint32_t>(input_offset));
-                    RawTagHexD('q', static_cast<uint32_t>(input_plus_offset));
-                    RawTagHexD('p', static_cast<uint32_t>(product));
-                    RawTagHexD('a', static_cast<uint32_t>(acc));
-                    RawNewlineD();
+                    // RawPutcD('['); RawPutcD('D'); RawPutcD('1'); RawPutcD(']');
+                    // RawTagHexD('f', static_cast<uint32_t>(filter_y));
+                    // RawTagHexD('g', static_cast<uint32_t>(filter_x));
+                    // RawTagHexD('y', static_cast<uint32_t>(in_y));
+                    // RawTagHexD('x', static_cast<uint32_t>(in_x));
+                    // RawTagHexD('I', static_cast<uint32_t>(input_offset_index));
+                    // RawTagHexD('F', static_cast<uint32_t>(filter_offset_index));
+                    // RawTagHexD('i', static_cast<uint32_t>(input_val));
+                    // RawTagHexD('w', static_cast<uint32_t>(filter_val));
+                    // RawTagHexD('z', static_cast<uint32_t>(input_offset));
+                    // RawTagHexD('q', static_cast<uint32_t>(input_plus_offset));
+                    // RawTagHexD('p', static_cast<uint32_t>(product));
+                    // RawTagHexD('a', static_cast<uint32_t>(acc));
+                    // RawNewlineD();
                   }
                 } else {
                   if (dump_dw) {
-                    RawPutcD('['); RawPutcD('D'); RawPutcD('P'); RawPutcD(']');
-                    RawTagHexD('f', static_cast<uint32_t>(filter_y));
-                    RawTagHexD('g', static_cast<uint32_t>(filter_x));
-                    RawTagHexD('y', static_cast<uint32_t>(in_y));
-                    RawTagHexD('x', static_cast<uint32_t>(in_x));
-                    RawNewlineD();
+                    // RawPutcD('['); RawPutcD('D'); RawPutcD('P'); RawPutcD(']');
+                    // RawTagHexD('f', static_cast<uint32_t>(filter_y));
+                    // RawTagHexD('g', static_cast<uint32_t>(filter_x));
+                    // RawTagHexD('y', static_cast<uint32_t>(in_y));
+                    // RawTagHexD('x', static_cast<uint32_t>(in_x));
+                    // RawNewlineD();
                   }
                 }
               }
@@ -816,18 +816,18 @@ inline void DepthwiseConvPerChannel(
               const int32_t bias = bias_data[output_channel];
 
               if (dump_dw) {
-                RawPutcD('['); RawPutcD('D'); RawPutcD('3'); RawPutcD(']');
-                RawTagHexD('b', static_cast<uint32_t>(bias));
-                RawTagHexD('a', static_cast<uint32_t>(acc));
-                RawNewlineD();
+                // RawPutcD('['); RawPutcD('D'); RawPutcD('3'); RawPutcD(']');
+                // RawTagHexD('b', static_cast<uint32_t>(bias));
+                // RawTagHexD('a', static_cast<uint32_t>(acc));
+                // RawNewlineD();
               }
 
               acc += bias;
 
               if (dump_dw) {
-                RawPutcD('['); RawPutcD('D'); RawPutcD('4'); RawPutcD(']');
-                RawTagHexD('a', static_cast<uint32_t>(acc));
-                RawNewlineD();
+                // RawPutcD('['); RawPutcD('D'); RawPutcD('4'); RawPutcD(']');
+                // RawTagHexD('a', static_cast<uint32_t>(acc));
+                // RawNewlineD();
               }
             }
 
@@ -835,34 +835,34 @@ inline void DepthwiseConvPerChannel(
             const int32_t shift = output_shift[output_channel];
 
             if (dump_dw) {
-              RawPutcD('['); RawPutcD('D'); RawPutcD('5'); RawPutcD(']');
-              RawTagHexD('a', static_cast<uint32_t>(acc));
-              RawTagHexD('M', static_cast<uint32_t>(mult));
-              RawTagHexD('S', static_cast<uint32_t>(shift));
-              RawTagHexD('p', static_cast<uint32_t>(
-                                  reinterpret_cast<uintptr_t>(
-                                      &output_multiplier[output_channel])));
-              RawTagHexD('q', static_cast<uint32_t>(
-                                  reinterpret_cast<uintptr_t>(
-                                      &output_shift[output_channel])));
-              RawNewlineD();
+              // RawPutcD('['); RawPutcD('D'); RawPutcD('5'); RawPutcD(']');
+              // RawTagHexD('a', static_cast<uint32_t>(acc));
+              // RawTagHexD('M', static_cast<uint32_t>(mult));
+              // RawTagHexD('S', static_cast<uint32_t>(shift));
+              // RawTagHexD('p', static_cast<uint32_t>(
+              //                     reinterpret_cast<uintptr_t>(
+              //                         &output_multiplier[output_channel])));
+              // RawTagHexD('q', static_cast<uint32_t>(
+              //                     reinterpret_cast<uintptr_t>(
+              //                         &output_shift[output_channel])));
+              // RawNewlineD();
             }
 
             acc = MultiplyByQuantizedMultiplier(acc, mult, shift);
 
             if (dump_dw) {
-              RawPutcD('['); RawPutcD('D'); RawPutcD('6'); RawPutcD(']');
-              RawTagHexD('a', static_cast<uint32_t>(acc));
-              RawNewlineD();
+              // RawPutcD('['); RawPutcD('D'); RawPutcD('6'); RawPutcD(']');
+              // RawTagHexD('a', static_cast<uint32_t>(acc));
+              // RawNewlineD();
             }
 
             acc += output_offset;
 
             if (dump_dw) {
-              RawPutcD('['); RawPutcD('D'); RawPutcD('7'); RawPutcD(']');
-              RawTagHexD('a', static_cast<uint32_t>(acc));
-              RawTagHexD('O', static_cast<uint32_t>(output_offset));
-              RawNewlineD();
+              // RawPutcD('['); RawPutcD('D'); RawPutcD('7'); RawPutcD(']');
+              // RawTagHexD('a', static_cast<uint32_t>(acc));
+              // RawTagHexD('O', static_cast<uint32_t>(output_offset));
+              // RawNewlineD();
             }
 
             acc = std::max(acc, output_activation_min);
